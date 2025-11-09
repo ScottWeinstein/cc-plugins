@@ -1,0 +1,9 @@
+{
+  "name": "sw-feature-dev",
+  "version": "1.0.0",
+  "description": "Comprehensive feature development workflow with mandatory AskUserQuestion tool usage and specialized agents for codebase exploration, architecture design, and quality review",
+  "author": {
+    "name": "Scott Weinstein",
+    "email": "scott@weinste.in"
+  }
+}
