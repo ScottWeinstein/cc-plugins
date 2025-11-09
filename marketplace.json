@@ -1,0 +1,11 @@
+{
+  "name": "sw-plugins",
+  "displayName": "Scott's Plugins",
+  "description": "Custom Claude Code plugins by Scott Weinstein",
+  "plugins": [
+    {
+      "name": "sw-feature-dev",
+      "path": "plugins/sw-feature-dev"
+    }
+  ]
+}
