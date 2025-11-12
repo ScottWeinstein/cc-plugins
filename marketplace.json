@@ -1,11 +1,24 @@
 {
   "name": "sw-plugins",
-  "displayName": "Scott's Plugins",
-  "description": "Custom Claude Code plugins by Scott Weinstein",
+  "owner": {
+    "name": "Scott Weinstein",
+    "email": "scott@weinste.in"
+  },
+  "metadata": {
+    "description": "Custom Claude Code plugins by Scott Weinstein",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
   "plugins": [
     {
       "name": "sw-feature-dev",
-      "path": "plugins/sw-feature-dev"
+      "source": "./plugins/sw-feature-dev",
+      "description": "Comprehensive feature development workflow with mandatory AskUserQuestion tool usage and specialized agents for codebase exploration, architecture design, and quality review",
+      "version": "1.0.0",
+      "author": {
+        "name": "Scott Weinstein",
+        "email": "scott@weinste.in"
+      }
     }
   ]
 }
