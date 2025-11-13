@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Claude Code plugin marketplace repository containing custom plugins that extend Claude Code's capabilities.
 
 **Core files:**
-- `marketplace.json`: Marketplace manifest defining available plugins
+- `.claude-plugin/marketplace.json`: Marketplace manifest defining available plugins
 - `plugins/`: Directory containing individual plugin implementations
 
 **Current plugins:**
@@ -90,7 +90,7 @@ cd /home/sw/cc-plugins
 
 ### Marketplace Structure
 
-The `marketplace.json` follows this schema:
+The `.claude-plugin/marketplace.json` follows this schema:
 ```json
 {
   "name": "marketplace-id",
