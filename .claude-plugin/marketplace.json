@@ -19,6 +19,16 @@
         "name": "Scott Weinstein",
         "email": "scott@weinste.in"
       }
+    },
+    {
+      "name": "sw-code-review",
+      "source": "./plugins/sw-code-review",
+      "description": "Comprehensive code and design review plugin with pragmatic quality framework. Includes code review for architecture/security/maintainability and design review for UX/accessibility/visual design",
+      "version": "1.0.0",
+      "author": {
+        "name": "Scott Weinstein",
+        "email": "scott@weinste.in"
+      }
     }
   ]
 }

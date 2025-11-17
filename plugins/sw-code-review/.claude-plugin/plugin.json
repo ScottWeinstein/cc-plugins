@@ -1,0 +1,9 @@
+{
+  "name": "sw-code-review",
+  "version": "1.0.0",
+  "description": "Comprehensive code and design review plugin with pragmatic quality framework. Includes code review agent for architecture/security/maintainability and design review agent for UX/accessibility/visual design.",
+  "author": {
+    "name": "Scott Weinstein",
+    "email": "scott@weinste.in"
+  }
+}
