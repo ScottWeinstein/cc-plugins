@@ -1,0 +1,8 @@
+{
+  "name": "workspace-dev-servers",
+  "version": "1.0.0",
+  "displayName": "Workspace Dev Servers",
+  "description": "Manage Next.js and Inngest dev servers across git worktrees for flowt-cx project",
+  "author": "sw",
+  "license": "MIT"
+}

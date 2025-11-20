@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "nextjs": {
+      "type": "object",
+      "description": "Next.js dev server configuration",
+      "properties": {
+        "ports": {
+          "type": "array",
+          "description": "Available ports for Next.js dev servers (one per worktree)",
+          "items": {
+            "type": "integer",
+            "minimum": 1024,
+            "maximum": 65535
+          },
+          "default": [5001, 5002, 5003, 5004, 5005]
+        },
+        "turbopack": {
+          "type": "boolean",
+          "description": "Enable turbopack for faster dev builds",
+          "default": true
+        },
+        "hostname": {
+          "type": "string",
+          "description": "Hostname to bind to",
+          "default": "localhost"
+        }
+      }
+    },
+    "inngest": {
+      "type": "object",
+      "description": "Inngest dev server configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether to manage Inngest server",
+          "default": true
+        },
+        "port": {
+          "type": "integer",
+          "description": "Port for system-wide Inngest server",
+          "minimum": 1024,
+          "maximum": 65535,
+          "default": 8288
+        },
+        "pidFile": {
+          "type": "string",
+          "description": "Path to PID file for Inngest process",
+          "default": "/tmp/flowt-inngest.pid"
+        },
+        "logFile": {
+          "type": "string",
+          "description": "Path to log file (relative to project root)",
+          "default": "inngest-system.log"
+        }
+      }
+    },
+    "worktree": {
+      "type": "object",
+      "description": "Git worktree configuration",
+      "properties": {
+        "portCacheFile": {
+          "type": "string",
+          "description": "Filename for caching assigned port",
+          "default": ".dev-port"
+        }
+      }
+    }
+  }
+}
