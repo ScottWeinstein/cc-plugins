@@ -1,4 +1,6 @@
 **/dist/
+# Exception: wt-dev dist is committed for GitHub installs
+!plugins/wt-dev/dist/
 .vscode/
 node_modules/
 .env
