@@ -42,3 +42,10 @@ export {
   acquireLock,
   releaseLock,
 } from './shared/file-utils.js';
+
+// Plugin registration
+export {
+  registerPlugin,
+  unregisterPlugin,
+  checkRegistration,
+} from './register.js';
