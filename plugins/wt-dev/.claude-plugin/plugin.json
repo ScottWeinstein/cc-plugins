@@ -1,0 +1,19 @@
+{
+  "name": "wt-dev",
+  "version": "0.1.0",
+  "description": "Unified worktree and Inngest dev server management for multi-worktree Next.js projects",
+  "author": {
+    "name": "Scott Weinstein",
+    "email": "scott@weinste.in"
+  },
+  "skills": [
+    {
+      "name": "dev-server",
+      "source": "./skills/dev-server.skill.md"
+    },
+    {
+      "name": "inngest",
+      "source": "./skills/inngest.skill.md"
+    }
+  ]
+}
