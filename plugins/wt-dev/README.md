@@ -9,10 +9,10 @@ Unified worktree and Inngest dev server management for multi-worktree Next.js pr
 pnpm add -D "github:ScottWeinstein/cc-plugins#main&path:plugins/wt-dev"
 ```
 
-The postinstall script will automatically register the Claude Code plugin. If it fails, register manually:
+The postinstall script will automatically register the Claude Code plugin. If it fails add to approved builds
 
 ```bash
-npx wt-dev register
+pnpm approve-builds
 ```
 
 ### Verify Installation
@@ -24,6 +24,8 @@ npx wt-dev --help
 # Check Claude Code plugin is registered
 npx wt-dev register --status
 ```
+
+finally, add `.claude/plugins/wt-dev` to `.gitignore`
 
 ## Configuration
 
@@ -122,11 +124,11 @@ import {
   isPortInUse,
   registerPlugin,
   checkRegistration,
-} from 'wt-dev';
+} from "wt-dev";
 
 // Get worktree port and URL
 const wtConfig = getWorktreeConfig();
-console.log(wtConfig.port);    // 5001
+console.log(wtConfig.port); // 5001
 console.log(wtConfig.baseUrl); // http://localhost:5001
 
 // Manage dev server
@@ -141,7 +143,9 @@ const status = getInngestStatus(config);
 if (status.running) console.log(`PID: ${status.pid}`);
 
 // Port utilities
-if (await isPortInUse(5001)) { /* ... */ }
+if (await isPortInUse(5001)) {
+  /* ... */
+}
 
 // Plugin registration
 const result = registerPlugin({ force: true });
