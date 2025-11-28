@@ -31,6 +31,11 @@ import {
   showInngestLogs,
   restartInngestServer,
 } from './inngest/manager.js';
+import {
+  registerPlugin,
+  unregisterPlugin,
+  checkRegistration,
+} from './register.js';
 
 const HELP = `
 wt-dev - Unified worktree and Inngest management
@@ -38,6 +43,8 @@ wt-dev - Unified worktree and Inngest management
 Usage:
   wt-dev dev [options]      Manage dev server
   wt-dev inngest [options]  Manage Inngest server
+  wt-dev register           Register Claude Code plugin
+  wt-dev unregister         Unregister Claude Code plugin
   wt-dev --help             Show this help
 
 Dev Server Options:
@@ -54,6 +61,11 @@ Inngest Server Options:
   --logs          Tail the log file
   --restart       Restart the server
 
+Register Options:
+  (no option)     Register plugin with Claude Code
+  --force         Overwrite existing registration
+  --status        Check registration status
+
 Configuration:
   Add to your package.json:
   {
@@ -69,6 +81,7 @@ Examples:
   pnpm dev --force        # Force restart
   pnpm inngest            # Start Inngest
   pnpm inngest --stop     # Stop Inngest
+  npx wt-dev register     # Register Claude Code plugin
 `;
 
 function showHelp(): void {
@@ -155,6 +168,45 @@ async function main(): Promise<void> {
           await restartInngestServer(config);
         } else {
           await startInngestServer(config);
+        }
+        break;
+      }
+
+      case 'register': {
+        if (flags.has('status')) {
+          const status = checkRegistration();
+          if (status.registered) {
+            console.log(`✓ Plugin registered at ${status.pluginPath}`);
+            console.log(`  Project root: ${status.projectRoot}`);
+          } else {
+            console.log('✗ Plugin not registered');
+            if (status.projectRoot) {
+              console.log(`  Project root: ${status.projectRoot}`);
+              console.log('  Run: npx wt-dev register');
+            }
+          }
+        } else {
+          const result = registerPlugin({ force: flags.has('force') });
+          if (result.success) {
+            console.log(`✓ ${result.message}`);
+            if (result.pluginPath) {
+              console.log(`  Skills available: dev-server, inngest`);
+            }
+          } else {
+            console.error(`✗ ${result.message}`);
+            process.exit(1);
+          }
+        }
+        break;
+      }
+
+      case 'unregister': {
+        const result = unregisterPlugin();
+        if (result.success) {
+          console.log(`✓ ${result.message}`);
+        } else {
+          console.error(`✗ ${result.message}`);
+          process.exit(1);
         }
         break;
       }

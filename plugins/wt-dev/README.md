@@ -5,10 +5,29 @@ Unified worktree and Inngest dev server management for multi-worktree Next.js pr
 ## Installation
 
 ```bash
-pnpm add "github:ScottWeinstein/cc-plugins&path:plugins/wt-dev"
+# Install from GitHub
+pnpm add -D "github:ScottWeinstein/cc-plugins#main&path:plugins/wt-dev"
 ```
 
-Add to `package.json`:
+The postinstall script will automatically register the Claude Code plugin. If it fails, register manually:
+
+```bash
+npx wt-dev register
+```
+
+### Verify Installation
+
+```bash
+# Check CLI is working
+npx wt-dev --help
+
+# Check Claude Code plugin is registered
+npx wt-dev register --status
+```
+
+## Configuration
+
+Add to your `package.json`:
 
 ```json
 {
@@ -25,13 +44,21 @@ Add to `package.json`:
 
 ## Usage
 
+### Dev Server
+
 ```bash
 pnpm dev              # Start dev server
 pnpm dev --force      # Kill existing and restart
 pnpm dev --status     # Show status and URL
 pnpm dev --stop       # Stop server
 pnpm dev --logs       # Tail logs
+```
 
+Override port: `PORT=3000 pnpm dev`
+
+### Inngest Server
+
+```bash
 pnpm inngest          # Start/ensure Inngest running
 pnpm inngest --status # Show status
 pnpm inngest --stop   # Stop (affects all worktrees!)
@@ -39,7 +66,23 @@ pnpm inngest --restart
 pnpm inngest --logs
 ```
 
-Override port: `PORT=3000 pnpm dev`
+### Plugin Management
+
+```bash
+npx wt-dev register           # Register Claude Code plugin
+npx wt-dev register --status  # Check registration status
+npx wt-dev register --force   # Force re-register
+npx wt-dev unregister         # Remove registration
+```
+
+## Claude Code Skills
+
+After installation, Claude Code gains two skills:
+
+- **dev-server**: Manages per-worktree Next.js dev servers
+- **inngest**: Manages the shared Inngest dev server
+
+These skills teach Claude how to use wt-dev commands and handle common scenarios like port conflicts.
 
 ## Architecture
 
@@ -77,6 +120,8 @@ import {
   ensureInngestServer,
   getInngestStatus,
   isPortInUse,
+  registerPlugin,
+  checkRegistration,
 } from 'wt-dev';
 
 // Get worktree port and URL
@@ -97,11 +142,18 @@ if (status.running) console.log(`PID: ${status.pid}`);
 
 // Port utilities
 if (await isPortInUse(5001)) { /* ... */ }
+
+// Plugin registration
+const result = registerPlugin({ force: true });
+const regStatus = checkRegistration();
 ```
 
 ## Requirements
 
-Node.js >= 18, pnpm, Next.js with turbopack
+- Node.js >= 18
+- pnpm
+- Next.js with turbopack (for dev server)
+- Claude Code (for skills)
 
 ## License
 
