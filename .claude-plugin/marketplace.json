@@ -19,6 +19,16 @@
         "name": "Scott Weinstein",
         "email": "scott@weinste.in"
       }
+    },
+    {
+      "name": "wt-dev",
+      "source": "./plugins/wt-dev",
+      "description": "Unified worktree and Inngest dev server management for multi-worktree Next.js projects with hash-based port assignment and Claude Code skills",
+      "version": "0.1.0",
+      "author": {
+        "name": "Scott Weinstein",
+        "email": "scott@weinste.in"
+      }
     }
   ]
 }
