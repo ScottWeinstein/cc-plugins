@@ -8,7 +8,12 @@
 export { loadConfig, findProjectRoot, type WtDevConfig, type DevServerConfig } from './config.js';
 
 // Port management
-export { getHashBasedPort, getWorktreeConfig, type WorktreeConfig } from './dev-server/port-manager.js';
+export {
+  getHashBasedPort,
+  getWorktreePort,
+  getWorktreeConfig,
+  type WorktreeConfig,
+} from './dev-server/port-manager.js';
 
 // Dev server management
 export {
@@ -42,6 +47,7 @@ export {
   acquireLock,
   releaseLock,
 } from './shared/file-utils.js';
+export { listWorktrees, clearWorktreeCache } from './shared/git-utils.js';
 
 // Plugin registration
 export {

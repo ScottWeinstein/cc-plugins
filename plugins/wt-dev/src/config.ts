@@ -27,8 +27,10 @@ export interface WtDevConfig {
 }
 
 // Default configuration
+// 128 ports (5001-5128) provides ample room for worktrees while staying
+// in the unprivileged range (>1024) and below common application ports
 const DEFAULT_CONFIG: DevServerConfig = {
-  ports: [5001, 5002, 5003, 5004, 5005],
+  ports: Array.from({ length: 128 }, (_, i) => 5001 + i),
   inngestPort: 8288,
 };
 
@@ -97,7 +99,7 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
     // Log warning when using defaults due to config issues
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.warn(`Warning: Could not read devServer config from ${packagePath}: ${message}`);
-    console.warn('Using default configuration (ports: 5001-5005, inngestPort: 8288)');
+    console.warn('Using default configuration (ports: 5001-5128, inngestPort: 8288)');
   }
 
   return {
