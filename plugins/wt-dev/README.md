@@ -9,11 +9,7 @@ Unified worktree and Inngest dev server management for multi-worktree Next.js pr
 pnpm add -D "github:ScottWeinstein/cc-plugins#main&path:plugins/wt-dev"
 ```
 
-The postinstall script will automatically register the Claude Code plugin. If it fails add to approved builds
-
-```bash
-pnpm approve-builds
-```
+The postinstall script will automatically register the Claude Code plugin.
 
 ### Verify Installation
 
@@ -38,11 +34,16 @@ Add to your `package.json`:
     "inngest": "wt-dev inngest"
   },
   "devServer": {
-    "ports": [5001, 5002, 5003, 5004, 5005],
+    "basePort": 3000,
     "inngestPort": 8288
   }
 }
 ```
+
+- `basePort`: Starting port for the pool (default: 5001). 128 ports are generated starting from this value.
+- `inngestPort`: Port for the shared Inngest server (default: 8288)
+
+Each worktree gets a deterministic port based on its path hash.
 
 ## Usage
 
@@ -106,7 +107,7 @@ These skills teach Claude how to use wt-dev commands and handle common scenarios
 
 ## How It Works
 
-- **Port assignment**: MD5(projectRoot) % ports.length → consistent port per worktree
+- **Port assignment**: Hash-based with collision detection. Each worktree gets a deterministic port based on MD5(worktreePath). Collision resolution uses secondary hashes. Creation order priority ensures ports never change when worktrees are added/removed.
 - **Process management**: SIGKILL only (Next.js ignores SIGTERM), race condition detection
 - **Port detection**: ss → lsof → netstat → Node.js (multi-method fallback)
 - **Inngest coordination**: Lock-based startup, PID tracking, health checks

@@ -4,10 +4,13 @@
  * Projects configure wt-dev via their package.json:
  * {
  *   "devServer": {
- *     "ports": [5001, 5002, 5003, 5004, 5005],
+ *     "basePort": 3000,
  *     "inngestPort": 8288
  *   }
  * }
+ *
+ * basePort: Starting port for the pool (defaults to 5001)
+ * 128 ports are generated starting from basePort.
  */
 export interface DevServerConfig {
     /** Available ports for worktree dev servers */
