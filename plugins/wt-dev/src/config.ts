@@ -4,10 +4,13 @@
  * Projects configure wt-dev via their package.json:
  * {
  *   "devServer": {
- *     "ports": [5001, 5002, 5003, 5004, 5005],
+ *     "basePort": 3000,
  *     "inngestPort": 8288
  *   }
  * }
+ *
+ * basePort: Starting port for the pool (defaults to 5001)
+ * 128 ports are generated starting from basePort.
  */
 
 import fs from 'fs';
@@ -26,11 +29,17 @@ export interface WtDevConfig {
   projectRoot: string;
 }
 
-// Default configuration
-const DEFAULT_CONFIG: DevServerConfig = {
-  ports: [5001, 5002, 5003, 5004, 5005],
-  inngestPort: 8288,
-};
+// Default base port (5001 keeps us in unprivileged range and below common app ports)
+const DEFAULT_BASE_PORT = 5001;
+const PORT_POOL_SIZE = 128;
+const DEFAULT_INNGEST_PORT = 8288;
+
+/**
+ * Generate a port pool starting from basePort
+ */
+function generatePortPool(basePort: number): number[] {
+  return Array.from({ length: PORT_POOL_SIZE }, (_, i) => basePort + i);
+}
 
 /**
  * Find the project root by looking for package.json
@@ -81,27 +90,31 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
   const root = projectRoot ?? findProjectRoot();
   const packagePath = path.join(root, 'package.json');
 
-  let devServer = { ...DEFAULT_CONFIG };
+  let basePort = DEFAULT_BASE_PORT;
+  let inngestPort = DEFAULT_INNGEST_PORT;
 
   try {
     const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
     if (packageJson.devServer) {
-      if (Array.isArray(packageJson.devServer.ports)) {
-        devServer.ports = packageJson.devServer.ports;
+      if (typeof packageJson.devServer.basePort === 'number') {
+        basePort = packageJson.devServer.basePort;
       }
       if (typeof packageJson.devServer.inngestPort === 'number') {
-        devServer.inngestPort = packageJson.devServer.inngestPort;
+        inngestPort = packageJson.devServer.inngestPort;
       }
     }
   } catch (error) {
     // Log warning when using defaults due to config issues
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.warn(`Warning: Could not read devServer config from ${packagePath}: ${message}`);
-    console.warn('Using default configuration (ports: 5001-5005, inngestPort: 8288)');
+    console.warn(`Using default configuration (basePort: ${DEFAULT_BASE_PORT}, inngestPort: ${DEFAULT_INNGEST_PORT})`);
   }
 
   return {
-    devServer,
+    devServer: {
+      ports: generatePortPool(basePort),
+      inngestPort,
+    },
     projectRoot: root,
   };
 }
