@@ -22,12 +22,13 @@ This is a Claude Code plugin marketplace repository (pnpm monorepo) containing c
 
 ```bash
 pnpm install          # Install dependencies and build
-pnpm run build        # Build all packages
-pnpm run check        # Run format:check, lint, typecheck
-pnpm run format       # Format with Prettier
-pnpm run lint         # Run ESLint
-pnpm run typecheck    # Type check TypeScript
-pnpm run release      # Cut a new release (prompts for version)
+pnpm build        # Build all packages
+pnpm check        # Run format:check, lint, typecheck
+pnpm test         # Run tests (if available)
+pnpm format       # Format with Prettier
+pnpm lint         # Run ESLint
+pnpm typecheck    # Type check TypeScript
+pnpm release      # Trigger a release via GitHub Actions
 ```
 
 ## Versioning
