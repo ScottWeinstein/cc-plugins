@@ -7,10 +7,10 @@
  * Port numbers are validated before use.
  */
 
-import net from 'net';
-import { execFileSync, execSync } from 'child_process';
+import net from "net";
+import { execFileSync, execSync } from "child_process";
 
-const IS_WINDOWS = process.platform === 'win32';
+const IS_WINDOWS = process.platform === "win32";
 
 /**
  * Check if a port is available (not in use) using Node.js net module
@@ -19,15 +19,15 @@ export function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
     const server = net.createServer();
 
-    server.once('error', () => {
+    server.once("error", () => {
       resolve(false);
     });
 
-    server.once('listening', () => {
+    server.once("listening", () => {
       server.close();
     });
 
-    server.once('close', () => {
+    server.once("close", () => {
       resolve(true);
     });
 
@@ -42,15 +42,15 @@ export function isPortAvailable(port: number): Promise<boolean> {
 export async function isPortInUse(port: number): Promise<boolean> {
   // Validate port is a safe integer
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    throw new Error('Invalid port number');
+    throw new Error("Invalid port number");
   }
 
   // Method 1: Try ss (most reliable for TCP listeners on Linux)
   if (!IS_WINDOWS) {
     try {
-      const ssOutput = execFileSync('ss', ['-tlnp'], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+      const ssOutput = execFileSync("ss", ["-tlnp"], {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
       // Parse output in JS instead of piping to grep (defense in depth)
       const portPattern = new RegExp(`:${port}\\s`);
@@ -65,9 +65,9 @@ export async function isPortInUse(port: number): Promise<boolean> {
   // Method 2: Try lsof (Unix/macOS)
   if (!IS_WINDOWS) {
     try {
-      const lsofOutput = execFileSync('lsof', ['-i', '-P', '-n'], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+      const lsofOutput = execFileSync("lsof", ["-i", "-P", "-n"], {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
       // Parse output in JS: look for LISTEN state with matching port
       const portPattern = new RegExp(`:${port}\\b.*LISTEN`);
@@ -83,14 +83,14 @@ export async function isPortInUse(port: number): Promise<boolean> {
   try {
     let netstatOutput: string;
     if (IS_WINDOWS) {
-      netstatOutput = execFileSync('netstat', ['-ano'], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+      netstatOutput = execFileSync("netstat", ["-ano"], {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
     } else {
-      netstatOutput = execFileSync('netstat', ['-tlnp'], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+      netstatOutput = execFileSync("netstat", ["-tlnp"], {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
     }
     // Parse output in JS
@@ -118,24 +118,24 @@ export async function isPortInUse(port: number): Promise<boolean> {
 export function findProcessesOnPort(port: number): number[] {
   // Validate port is a safe integer
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    throw new Error('Invalid port number');
+    throw new Error("Invalid port number");
   }
 
   try {
     if (IS_WINDOWS) {
       // Windows: use netstat, parse output to validate LISTENING state
       const output = execSync(`netstat -ano`, {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
       const pids = output
-        .split('\n')
+        .split("\n")
         .filter((line) => {
           const parts = line.trim().split(/\s+/);
           // Validate: has LISTENING state AND port matches exactly
           return (
             parts.length >= 5 &&
-            parts[3] === 'LISTENING' &&
+            parts[3] === "LISTENING" &&
             (parts[1].endsWith(`:${port}`) || parts[1] === `0.0.0.0:${port}`)
           );
         })
@@ -146,13 +146,13 @@ export function findProcessesOnPort(port: number): number[] {
 
     // Unix: prefer ss for accurate LISTEN-only filtering
     try {
-      const ssOutput = execFileSync('ss', ['-tlnp'], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+      const ssOutput = execFileSync("ss", ["-tlnp"], {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
       // Filter lines matching port in JS, then extract PIDs
       const portPattern = new RegExp(`:${port}\\s`);
-      const matchingLines = ssOutput.split('\n').filter(line => portPattern.test(line));
+      const matchingLines = ssOutput.split("\n").filter((line) => portPattern.test(line));
 
       // Parse ss output to extract PIDs (format: users:(("name",pid=123,fd=4)))
       const pids: number[] = [];
@@ -160,7 +160,7 @@ export function findProcessesOnPort(port: number): number[] {
         const pidMatches = line.match(/pid=(\d+)/g);
         if (pidMatches) {
           for (const m of pidMatches) {
-            const pid = parseInt(m.split('=')[1], 10);
+            const pid = parseInt(m.split("=")[1], 10);
             if (!isNaN(pid)) {
               pids.push(pid);
             }
@@ -178,13 +178,13 @@ export function findProcessesOnPort(port: number): number[] {
     // Try lsof with LISTEN filter
     try {
       // lsof -i :port -sTCP:LISTEN only shows listening sockets
-      const lsofOutput = execFileSync('lsof', ['-ti', `:${port}`, '-sTCP:LISTEN'], {
-        encoding: 'utf8',
-        stdio: ['pipe', 'pipe', 'ignore'],
+      const lsofOutput = execFileSync("lsof", ["-ti", `:${port}`, "-sTCP:LISTEN"], {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
       });
       return lsofOutput
         .trim()
-        .split('\n')
+        .split("\n")
         .map((line) => parseInt(line.trim(), 10))
         .filter((pid) => !isNaN(pid));
     } catch {

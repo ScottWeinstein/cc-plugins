@@ -17,25 +17,21 @@
  *   wt-dev inngest --restart # Restart Inngest
  */
 
-import { loadConfig } from './config.js';
+import { loadConfig } from "./config.js";
 import {
   startDevServer,
   stopDevServer,
   showDevServerStatus,
   showDevServerLogs,
-} from './dev-server/manager.js';
+} from "./dev-server/manager.js";
 import {
   startInngestServer,
   stopInngestServer,
   showInngestStatus,
   showInngestLogs,
   restartInngestServer,
-} from './inngest/manager.js';
-import {
-  registerPlugin,
-  unregisterPlugin,
-  checkRegistration,
-} from './register.js';
+} from "./inngest/manager.js";
+import { registerPlugin, unregisterPlugin, checkRegistration } from "./register.js";
 
 const HELP = `
 wt-dev - Unified worktree and Inngest management
@@ -92,14 +88,14 @@ function parseArgs(args: string[]): {
   command: string;
   flags: Set<string>;
 } {
-  const command = args[0] || '';
+  const command = args[0] || "";
   const flags = new Set<string>();
 
   for (let i = 1; i < args.length; i++) {
     const arg = args[i];
-    if (arg.startsWith('--')) {
+    if (arg.startsWith("--")) {
       flags.add(arg.slice(2));
-    } else if (arg.startsWith('-')) {
+    } else if (arg.startsWith("-")) {
       flags.add(arg.slice(1));
     }
   }
@@ -111,7 +107,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   // Handle help
-  if (args.includes('--help') || args.includes('-h') || args.length === 0) {
+  if (args.includes("--help") || args.includes("-h") || args.length === 0) {
     showHelp();
     process.exit(0);
   }
@@ -121,50 +117,42 @@ async function main(): Promise<void> {
 
   try {
     switch (command) {
-      case 'dev': {
+      case "dev": {
         // Validate no conflicting flags
-        const actionFlags = ['force', 'stop', 'status', 'logs'].filter((f) =>
-          flags.has(f)
-        );
+        const actionFlags = ["force", "stop", "status", "logs"].filter((f) => flags.has(f));
         if (actionFlags.length > 1) {
-          console.error(
-            `Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`
-          );
+          console.error(`Error: Cannot use multiple flags together: --${actionFlags.join(", --")}`);
           process.exit(1);
         }
 
-        if (flags.has('status')) {
+        if (flags.has("status")) {
           await showDevServerStatus(config);
-        } else if (flags.has('stop')) {
+        } else if (flags.has("stop")) {
           const success = await stopDevServer(config);
           process.exit(success ? 0 : 1);
-        } else if (flags.has('logs')) {
+        } else if (flags.has("logs")) {
           showDevServerLogs(config);
         } else {
-          await startDevServer(config, { force: flags.has('force') });
+          await startDevServer(config, { force: flags.has("force") });
         }
         break;
       }
 
-      case 'inngest': {
+      case "inngest": {
         // Validate no conflicting flags
-        const actionFlags = ['stop', 'status', 'logs', 'restart'].filter((f) =>
-          flags.has(f)
-        );
+        const actionFlags = ["stop", "status", "logs", "restart"].filter((f) => flags.has(f));
         if (actionFlags.length > 1) {
-          console.error(
-            `Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`
-          );
+          console.error(`Error: Cannot use multiple flags together: --${actionFlags.join(", --")}`);
           process.exit(1);
         }
 
-        if (flags.has('status')) {
+        if (flags.has("status")) {
           showInngestStatus(config);
-        } else if (flags.has('stop')) {
+        } else if (flags.has("stop")) {
           await stopInngestServer(config);
-        } else if (flags.has('logs')) {
+        } else if (flags.has("logs")) {
           showInngestLogs(config);
-        } else if (flags.has('restart')) {
+        } else if (flags.has("restart")) {
           await restartInngestServer(config);
         } else {
           await startInngestServer(config);
@@ -172,21 +160,21 @@ async function main(): Promise<void> {
         break;
       }
 
-      case 'register': {
-        if (flags.has('status')) {
+      case "register": {
+        if (flags.has("status")) {
           const status = checkRegistration();
           if (status.registered) {
             console.log(`✓ Plugin registered at ${status.pluginPath}`);
             console.log(`  Project root: ${status.projectRoot}`);
           } else {
-            console.log('✗ Plugin not registered');
+            console.log("✗ Plugin not registered");
             if (status.projectRoot) {
               console.log(`  Project root: ${status.projectRoot}`);
-              console.log('  Run: npx wt-dev register');
+              console.log("  Run: npx wt-dev register");
             }
           }
         } else {
-          const result = registerPlugin({ force: flags.has('force') });
+          const result = registerPlugin({ force: flags.has("force") });
           if (result.success) {
             console.log(`✓ ${result.message}`);
             if (result.pluginPath) {
@@ -200,7 +188,7 @@ async function main(): Promise<void> {
         break;
       }
 
-      case 'unregister': {
+      case "unregister": {
         const result = unregisterPlugin();
         if (result.success) {
           console.log(`✓ ${result.message}`);
@@ -217,9 +205,7 @@ async function main(): Promise<void> {
         process.exit(1);
     }
   } catch (error) {
-    console.error(
-      `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+    console.error(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
     process.exit(1);
   }
 }

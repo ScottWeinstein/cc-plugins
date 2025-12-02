@@ -21,9 +21,10 @@
   ],
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "dev": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "postinstall": "node dist/register.js"
+    "prepublishOnly": "pnpm run build",
+    "postinstall": "node dist/register.js || true"
   },
   "keywords": [
     "worktree",
@@ -35,9 +36,13 @@
   ],
   "author": "Scott Weinstein",
   "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottWeinstein/cc-plugins.git",
+    "directory": "plugins/wt-dev"
+  },
+  "bugs": {
+    "url": "https://github.com/ScottWeinstein/cc-plugins/issues"
   },
   "engines": {
     "node": ">=18.0.0"

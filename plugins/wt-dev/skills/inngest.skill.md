@@ -10,19 +10,20 @@ Manage the system-wide Inngest dev server that is shared across all worktrees. I
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm inngest` | Start/ensure Inngest server is running |
-| `pnpm inngest --status` | Check if server is running |
-| `pnpm inngest --stop` | Stop the server (affects ALL worktrees!) |
-| `pnpm inngest --restart` | Restart the server |
-| `pnpm inngest --logs` | Tail the Inngest log file |
+| Command                  | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `pnpm inngest`           | Start/ensure Inngest server is running   |
+| `pnpm inngest --status`  | Check if server is running               |
+| `pnpm inngest --stop`    | Stop the server (affects ALL worktrees!) |
+| `pnpm inngest --restart` | Restart the server                       |
+| `pnpm inngest --logs`    | Tail the Inngest log file                |
 
 ## Shared Server Warning
 
 **IMPORTANT**: The Inngest server is shared across ALL worktrees. Stopping it affects every running dev server in the project.
 
 Before stopping, confirm with the user:
+
 - "Stopping Inngest will affect all worktrees. Continue?"
 
 ## Usage Protocol
@@ -30,6 +31,7 @@ Before stopping, confirm with the user:
 1. **Inngest starts automatically** with `pnpm dev` - you rarely need to manage it directly.
 
 2. **Check status if background jobs aren't processing**:
+
    ```bash
    pnpm inngest --status
    ```
@@ -76,6 +78,7 @@ The Inngest server is configured in `package.json`:
 ## Common Scenarios
 
 ### Background Jobs Not Running
+
 ```bash
 pnpm inngest --status    # Check if running
 pnpm inngest --logs      # Check for errors
@@ -83,10 +86,12 @@ pnpm inngest --restart   # Restart if needed
 ```
 
 ### Inngest UI Access
+
 - URL: http://localhost:8288
 - Shows registered functions, event history, run status
 
 ### Debugging
+
 ```bash
 pnpm inngest --logs      # View Inngest output
 lsof -i :8288            # Check what's using port
@@ -95,6 +100,7 @@ lsof -i :8288            # Check what's using port
 ## Pre-Approved Operations
 
 When using this skill, you can execute:
+
 - `pnpm inngest`, `pnpm inngest --status`, `pnpm inngest --stop`, `pnpm inngest --restart`, `pnpm inngest --logs`
 - `lsof -i :8288` to check port usage
 - `curl localhost:8288` to test connectivity

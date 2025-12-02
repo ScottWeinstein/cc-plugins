@@ -7,15 +7,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Claude Code plugin marketplace repository containing custom plugins that extend Claude Code's capabilities.
 
 **Core files:**
+
 - `.claude-plugin/marketplace.json`: Marketplace manifest defining available plugins
 - `plugins/`: Directory containing individual plugin implementations
 
 **Current plugins:**
+
 - `sw-feature-dev`: Comprehensive feature development workflow with 7-phase guided process
 
 ## Plugin Structure
 
 Each plugin lives in `plugins/<plugin-name>/` with:
+
 - `.claude-plugin/plugin.json`: Plugin metadata (name, version, description, author)
 - `README.md`: User-facing documentation
 - `commands/*.md`: Slash command definitions (frontmatter + prompt)
@@ -24,6 +27,7 @@ Each plugin lives in `plugins/<plugin-name>/` with:
 ### Frontmatter Requirements
 
 **Slash commands** (`commands/*.md`):
+
 ```yaml
 ---
 description: Brief description shown in command list
@@ -32,6 +36,7 @@ argument-hint: Optional hint text (e.g., "Optional feature description")
 ```
 
 **Agents** (`agents/*.md`):
+
 ```yaml
 ---
 name: agent-name
@@ -67,6 +72,7 @@ The `sw-feature-dev` plugin implements a 7-phase feature development workflow wi
 ### Critical Design Patterns
 
 **MANDATORY AskUserQuestion tool usage**: The `/feature-dev` command MUST use AskUserQuestion tool (not plain text) when asking questions. Key usage points:
+
 - Phase 3: All clarifying questions
 - Phase 4: Architectural priorities (multiSelect: true), approach selection (single select)
 - Phase 6: Review focus areas (multiSelect: true), how to proceed with findings (single select)
@@ -91,6 +97,7 @@ cd /home/sw/cc-plugins
 ### Marketplace Structure
 
 The `.claude-plugin/marketplace.json` follows this schema:
+
 ```json
 {
   "name": "marketplace-id",
