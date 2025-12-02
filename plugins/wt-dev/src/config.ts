@@ -5,12 +5,16 @@
  * {
  *   "devServer": {
  *     "basePort": 3000,
+ *     "maxPorts": 5,
  *     "inngestPort": 8288
  *   }
  * }
  *
  * basePort: Starting port for the pool (defaults to 5001)
- * 128 ports are generated starting from basePort.
+ * maxPorts: Number of ports to generate (defaults to 5, valid range: 1-128)
+ *   - Hard limit of 128 prevents excessive port allocation that could
+ *     exhaust system resources or conflict with other services
+ *   - Values outside 1-128 are clamped with a warning
  */
 
 import fs from 'fs';
@@ -31,14 +35,22 @@ export interface WtDevConfig {
 
 // Default base port (5001 keeps us in unprivileged range and below common app ports)
 const DEFAULT_BASE_PORT = 5001;
-const PORT_POOL_SIZE = 128;
+const DEFAULT_MAX_PORTS = 5;
+const MAX_PORTS_LIMIT = 128; // Hard limit to prevent excessive port allocation
 const DEFAULT_INNGEST_PORT = 8288;
 
 /**
- * Generate a port pool starting from basePort
+ * Generate a port pool starting from basePort.
+ * Clamps maxPorts to valid range [1, MAX_PORTS_LIMIT] with a warning.
  */
-function generatePortPool(basePort: number): number[] {
-  return Array.from({ length: PORT_POOL_SIZE }, (_, i) => basePort + i);
+function generatePortPool(basePort: number, maxPorts: number): number[] {
+  const size = Math.min(Math.max(1, maxPorts), MAX_PORTS_LIMIT);
+  if (size !== maxPorts) {
+    console.warn(
+      `Warning: maxPorts ${maxPorts} was clamped to ${size} (valid range: 1-${MAX_PORTS_LIMIT})`,
+    );
+  }
+  return Array.from({ length: size }, (_, i) => basePort + i);
 }
 
 /**
@@ -91,6 +103,7 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
   const packagePath = path.join(root, 'package.json');
 
   let basePort = DEFAULT_BASE_PORT;
+  let maxPorts = DEFAULT_MAX_PORTS;
   let inngestPort = DEFAULT_INNGEST_PORT;
 
   try {
@@ -98,6 +111,14 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
     if (packageJson.devServer) {
       if (typeof packageJson.devServer.basePort === 'number') {
         basePort = packageJson.devServer.basePort;
+      }
+      if (typeof packageJson.devServer.maxPorts === 'number') {
+        if (!Number.isFinite(packageJson.devServer.maxPorts)) {
+          throw new Error(
+            `devServer.maxPorts must be a finite number (got ${packageJson.devServer.maxPorts})`,
+          );
+        }
+        maxPorts = packageJson.devServer.maxPorts;
       }
       if (typeof packageJson.devServer.inngestPort === 'number') {
         inngestPort = packageJson.devServer.inngestPort;
@@ -108,13 +129,13 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.warn(`Warning: Could not read devServer config from ${packagePath}: ${message}`);
     console.warn(
-      `Using default configuration (basePort: ${DEFAULT_BASE_PORT}, inngestPort: ${DEFAULT_INNGEST_PORT})`,
+      `Using default configuration (basePort: ${DEFAULT_BASE_PORT}, maxPorts: ${DEFAULT_MAX_PORTS}, inngestPort: ${DEFAULT_INNGEST_PORT})`,
     );
   }
 
   return {
     devServer: {
-      ports: generatePortPool(basePort),
+      ports: generatePortPool(basePort, maxPorts),
       inngestPort,
     },
     projectRoot: root,

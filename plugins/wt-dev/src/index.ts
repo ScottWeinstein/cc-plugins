@@ -12,6 +12,7 @@ export {
   getHashBasedPort,
   getWorktreePort,
   getWorktreeConfig,
+  PortExhaustedError,
   type WorktreeConfig,
 } from './dev-server/port-manager.js';
 
