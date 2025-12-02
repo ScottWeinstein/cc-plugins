@@ -161,29 +161,48 @@ export function getHashBasedPort(projectRoot: string, ports: number[]): number {
 /**
  * Resolve ports for all worktrees using consistent hashing with collision resolution.
  *
- * Algorithm ensures FULL STABILITY:
- * - Process worktrees in CREATION ORDER (as returned by `git worktree list`)
- * - Earlier-created worktrees have priority for their preferred port
- * - Each worktree tries its hash sequence until finding an unclaimed port
+ * Algorithm ensures STABILITY and RESERVATION:
+ * - Main checkout (first worktree from `git worktree list`) ALWAYS gets basePort (ports[0])
+ * - Other worktrees use hash-based assignment from remaining ports (ports[1:])
+ * - This ensures basePort is reserved for the canonical development environment
  *
  * Key insight: A worktree's port NEVER changes because:
+ * - Main checkout always gets basePort regardless of its path hash
+ * - Other worktrees get stable ports from the remaining pool
  * - New worktrees are always created AFTER existing ones
- * - So new worktrees never have priority over existing ones
  * - Removing a worktree just frees up its port, doesn't affect others
  */
-function resolveAllPorts(worktrees: string[], ports: number[]): Map<string, number> {
+export function resolveAllPorts(worktrees: string[], ports: number[]): Map<string, number> {
   const assignments = new Map<string, number>();
   const usedPorts = new Set<number>();
 
-  // Process in creation order (git worktree list returns this order)
-  // Earlier-created worktrees get first pick of their preferred port
-  for (const wt of worktrees) {
-    // Try primary hash first, then secondary hashes until we find unused port
-    // Max attempts = ports.length * 10 to handle unlucky hash sequences
-    const maxAttempts = ports.length * 10;
+  if (worktrees.length === 0) {
+    return assignments;
+  }
+
+  // First worktree (main checkout) ALWAYS gets basePort
+  const basePort = ports[0];
+  assignments.set(worktrees[0], basePort);
+  usedPorts.add(basePort);
+
+  // Remaining worktrees use hash-based assignment from remaining ports
+  // This ensures worktrees can NEVER get basePort
+  const worktreePorts = ports.slice(1);
+
+  if (worktreePorts.length === 0 && worktrees.length > 1) {
+    throw new PortExhaustedError(worktrees.length, ports.length);
+  }
+
+  for (let i = 1; i < worktrees.length; i++) {
+    const wt = worktrees[i];
+    // Max attempts = worktreePorts.length * 10 to handle unlucky hash sequences
+    const maxAttempts = worktreePorts.length * 10;
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const candidatePort =
-        attempt === 0 ? computeHashPort(wt, ports) : computeSecondaryHashPort(wt, ports, attempt);
+        attempt === 0
+          ? computeHashPort(wt, worktreePorts)
+          : computeSecondaryHashPort(wt, worktreePorts, attempt);
 
       if (!usedPorts.has(candidatePort)) {
         assignments.set(wt, candidatePort);

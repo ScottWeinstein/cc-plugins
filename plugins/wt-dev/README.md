@@ -35,14 +35,14 @@ Add to your `package.json`:
   },
   "devServer": {
     "basePort": 3000,
-    "maxPorts": 5,
+    "maxPorts": 10,
     "inngestPort": 8288
   }
 }
 ```
 
 - `basePort`: Starting port for the pool (default: 5001)
-- `maxPorts`: Number of ports in the pool (default: 5, valid range: 1-128, values outside range are clamped with a warning). Keep this small for OAuth callback registration.
+- `maxPorts`: Number of ports in the pool (default: 128, valid range: 1-128, values outside range are clamped with a warning). Keep this small if you need to register OAuth callback URLs for each port.
 - `inngestPort`: Port for the shared Inngest server (default: 8288)
 
 Each worktree gets a deterministic port based on its path hash.
