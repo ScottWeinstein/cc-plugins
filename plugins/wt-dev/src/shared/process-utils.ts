@@ -46,7 +46,7 @@ function sleep(ms: number): Promise<void> {
 export async function waitForPortRelease(
   port: number,
   targetPids: Set<number>,
-  maxRetries = MAX_PORT_CHECK_RETRIES
+  maxRetries = MAX_PORT_CHECK_RETRIES,
 ): Promise<boolean> {
   for (let i = 0; i < maxRetries; i++) {
     const stillInUse = await isPortInUse(port);
@@ -62,7 +62,7 @@ export async function waitForPortRelease(
       if (!targetStillPresent && currentPids.length > 0) {
         // Target processes died but port re-bound by another process
         throw new Error(
-          `Port ${port} re-bound by different process (PID ${currentPids[0]}) during cleanup`
+          `Port ${port} re-bound by different process (PID ${currentPids[0]}) during cleanup`,
         );
       }
     }
@@ -123,7 +123,7 @@ export async function killProcessesOnPort(port: number): Promise<boolean> {
       if (await waitForPortRelease(port, targetPids, 3)) {
         return true;
       }
-    } catch (error) {
+    } catch {
       // Race condition: port re-bound by different process
       return false;
     }

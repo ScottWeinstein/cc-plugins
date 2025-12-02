@@ -37,7 +37,11 @@ export {
 
 // Shared utilities
 export { isPortInUse, isPortAvailable, findProcessesOnPort } from './shared/port-detection.js';
-export { isProcessRunning, killProcessesOnPort, waitForPortRelease } from './shared/process-utils.js';
+export {
+  isProcessRunning,
+  killProcessesOnPort,
+  waitForPortRelease,
+} from './shared/process-utils.js';
 export {
   atomicWrite,
   atomicWriteSync,
@@ -50,8 +54,4 @@ export {
 export { listWorktrees, clearWorktreeCache } from './shared/git-utils.js';
 
 // Plugin registration
-export {
-  registerPlugin,
-  unregisterPlugin,
-  checkRegistration,
-} from './register.js';
+export { registerPlugin, unregisterPlugin, checkRegistration } from './register.js';

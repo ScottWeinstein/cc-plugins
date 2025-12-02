@@ -4,18 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Structure
 
-This is a Claude Code plugin marketplace repository containing custom plugins that extend Claude Code's capabilities.
+This is a Claude Code plugin marketplace repository (pnpm monorepo) containing custom plugins that extend Claude Code's capabilities.
 
 **Core files:**
+
 - `.claude-plugin/marketplace.json`: Marketplace manifest defining available plugins
 - `plugins/`: Directory containing individual plugin implementations
+- `package.json`: Workspace root with build/lint/format scripts
+- `pnpm-workspace.yaml`: Defines workspace packages (`plugins/*`)
 
 **Current plugins:**
+
 - `sw-feature-dev`: Comprehensive feature development workflow with 7-phase guided process
+- `wt-dev`: Dev server and Inngest management CLI for multi-worktree projects
+
+## Development Commands
+
+```bash
+pnpm install          # Install dependencies and build
+pnpm run build        # Build all packages
+pnpm run check        # Run format:check, lint, typecheck
+pnpm run format       # Format with Prettier
+pnpm run lint         # Run ESLint
+pnpm run typecheck    # Type check TypeScript
+pnpm run release      # Cut a new release (prompts for version)
+```
+
+## Versioning
+
+This monorepo uses **unified versioning** - all packages share the same version number. The release script updates both root and plugin package.json files.
 
 ## Plugin Structure
 
 Each plugin lives in `plugins/<plugin-name>/` with:
+
 - `.claude-plugin/plugin.json`: Plugin metadata (name, version, description, author)
 - `README.md`: User-facing documentation
 - `commands/*.md`: Slash command definitions (frontmatter + prompt)
@@ -24,6 +46,7 @@ Each plugin lives in `plugins/<plugin-name>/` with:
 ### Frontmatter Requirements
 
 **Slash commands** (`commands/*.md`):
+
 ```yaml
 ---
 description: Brief description shown in command list
@@ -32,6 +55,7 @@ argument-hint: Optional hint text (e.g., "Optional feature description")
 ```
 
 **Agents** (`agents/*.md`):
+
 ```yaml
 ---
 name: agent-name
@@ -67,6 +91,7 @@ The `sw-feature-dev` plugin implements a 7-phase feature development workflow wi
 ### Critical Design Patterns
 
 **MANDATORY AskUserQuestion tool usage**: The `/feature-dev` command MUST use AskUserQuestion tool (not plain text) when asking questions. Key usage points:
+
 - Phase 3: All clarifying questions
 - Phase 4: Architectural priorities (multiSelect: true), approach selection (single select)
 - Phase 6: Review focus areas (multiSelect: true), how to proceed with findings (single select)
@@ -77,20 +102,10 @@ The `sw-feature-dev` plugin implements a 7-phase feature development workflow wi
 
 **TodoWrite usage**: Track all 7 phases and update progress throughout.
 
-## Development Commands
-
-### Testing Plugin Locally
-
-```bash
-# Link plugin for local development
-cd /home/sw/cc-plugins
-# Use the plugin via slash command
-/feature-dev <optional feature description>
-```
-
 ### Marketplace Structure
 
 The `.claude-plugin/marketplace.json` follows this schema:
+
 ```json
 {
   "name": "marketplace-id",
@@ -126,7 +141,13 @@ The `.claude-plugin/marketplace.json` follows this schema:
 3. Create `README.md` with user documentation
 4. Add commands in `commands/*.md` with frontmatter
 5. Add agents in `agents/*.md` with frontmatter
-6. Register in `marketplace.json`
+6. Register in `.claude-plugin/marketplace.json`
+
+For TypeScript plugins, also add:
+
+- `package.json` with `build` and `typecheck` scripts
+- `tsconfig.json` for TypeScript configuration
+- Source in `src/`, output to `dist/`
 
 ## Common Patterns
 

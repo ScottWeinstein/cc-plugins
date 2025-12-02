@@ -91,7 +91,7 @@ function findInngestCli(): { command: string; args: string[] } {
       return { command: 'inngest-cli', args: [] };
     } catch {
       throw new Error(
-        'Could not find inngest-cli. Please ensure it is installed: pnpm add -D inngest-cli'
+        'Could not find inngest-cli. Please ensure it is installed: pnpm add -D inngest-cli',
       );
     }
   }
@@ -170,9 +170,7 @@ function startInngestServerProcess(config: WtDevConfig): number {
   const { command, args } = findInngestCli();
 
   // Build the discovery URLs for all worktree ports
-  const discoveryUrls = ports.map(
-    (port) => `http://localhost:${port}/api/inngest`
-  );
+  const discoveryUrls = ports.map((port) => `http://localhost:${port}/api/inngest`);
 
   // Build inngest-cli arguments
   const inngestArgs = [
@@ -235,7 +233,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
     // Check if the process is actually running
     if (isProcessRunning(existingPid)) {
       console.log(
-        `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`
+        `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`,
       );
       console.log(`  UI: http://localhost:${inngestPort}`);
       return;
@@ -249,7 +247,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
   // Double-check by testing the port
   if (await isPortInUse(inngestPort)) {
     console.log(
-      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`
+      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`,
     );
     console.log(`  UI: http://localhost:${inngestPort}`);
     return;
@@ -261,9 +259,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
     await sleep(2000);
 
     if (await isServerHealthy(inngestPort)) {
-      console.log(
-        `${colors.GREEN}✓ Inngest dev server started by another process${colors.NC}`
-      );
+      console.log(`${colors.GREEN}✓ Inngest dev server started by another process${colors.NC}`);
       console.log(`  UI: http://localhost:${inngestPort}`);
       return;
     }
@@ -283,9 +279,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
     const isHealthy = await waitForServerHealth(inngestPort);
 
     if (!isHealthy) {
-      console.log(
-        `${colors.YELLOW}⚠ Server started but health check timed out${colors.NC}`
-      );
+      console.log(`${colors.YELLOW}⚠ Server started but health check timed out${colors.NC}`);
       console.log('  The server may still be initializing.');
     }
   } finally {
@@ -304,7 +298,7 @@ export async function startInngestServer(config?: WtDevConfig): Promise<void> {
   const existingPid = readPidFile(PID_FILE);
   if (existingPid && isProcessRunning(existingPid)) {
     console.log(
-      `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`
+      `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`,
     );
     console.log(`  UI: http://localhost:${inngestPort}`);
     console.log(`  To restart: pnpm inngest --restart`);
@@ -315,7 +309,7 @@ export async function startInngestServer(config?: WtDevConfig): Promise<void> {
   // Also check if port is in use (in case PID file is stale)
   if (await isPortInUse(inngestPort)) {
     console.log(
-      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`
+      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`,
     );
     console.log(`  UI: http://localhost:${inngestPort}`);
     console.log(`  To restart: pnpm inngest --restart`);
@@ -377,7 +371,7 @@ export async function stopInngestServer(config?: WtDevConfig): Promise<void> {
 
   if (await isPortInUse(inngestPort)) {
     console.warn(
-      `${colors.YELLOW}Warning: Port ${inngestPort} may still be in use. Check manually.${colors.NC}`
+      `${colors.YELLOW}Warning: Port ${inngestPort} may still be in use. Check manually.${colors.NC}`,
     );
   } else {
     if (stoppedAny) {
@@ -419,11 +413,9 @@ export function showInngestLogs(config?: WtDevConfig): void {
 
   if (isWindows) {
     // Windows: Use PowerShell Get-Content
-    const ps = spawn(
-      'powershell',
-      ['-Command', `Get-Content -Path "${logFile}" -Tail 50 -Wait`],
-      { stdio: 'inherit' }
-    );
+    const ps = spawn('powershell', ['-Command', `Get-Content -Path "${logFile}" -Tail 50 -Wait`], {
+      stdio: 'inherit',
+    });
 
     process.on('SIGINT', () => {
       ps.kill();

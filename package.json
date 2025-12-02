@@ -1,0 +1,39 @@
+{
+  "name": "cc-plugins",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Claude Code plugin marketplace with development tools and workflow extensions",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yaml,yml}\"",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck",
+    "release": "node scripts/release.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottWeinstein/cc-plugins.git"
+  },
+  "author": "Scott Weinstein",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^20.10.0",
+    "eslint": "^9.15.0",
+    "prettier": "^3.4.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.15.0"
+  },
+  "packageManager": "pnpm@9.14.2",
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100,
+    "endOfLine": "lf"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

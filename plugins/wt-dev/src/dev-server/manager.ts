@@ -10,7 +10,7 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { loadConfig, getDevServerLogPath, type WtDevConfig } from '../config.js';
-import { getWorktreeConfig, type WorktreeConfig } from './port-manager.js';
+import { getWorktreeConfig } from './port-manager.js';
 import { isPortInUse } from '../shared/port-detection.js';
 import { killProcessesOnPort } from '../shared/process-utils.js';
 import { ensureInngestServer } from '../inngest/manager.js';
@@ -46,13 +46,9 @@ function printFooter(): void {
 async function testConnection(baseUrl: string): Promise<number> {
   return new Promise((resolve) => {
     const httpModule = baseUrl.startsWith('https') ? https : http;
-    const req = httpModule.get(
-      baseUrl,
-      { rejectUnauthorized: false },
-      (res) => {
-        resolve(res.statusCode ?? 0);
-      }
-    );
+    const req = httpModule.get(baseUrl, { rejectUnauthorized: false }, (res) => {
+      resolve(res.statusCode ?? 0);
+    });
 
     req.on('error', () => {
       resolve(0);
@@ -83,9 +79,7 @@ export async function showDevServerStatus(config?: WtDevConfig): Promise<void> {
   const serverRunning = await isPortInUse(wtConfig.port);
 
   if (serverRunning) {
-    console.log(
-      `${colors.GREEN}✓ Dev server IS RUNNING on port ${wtConfig.port}${colors.NC}`
-    );
+    console.log(`${colors.GREEN}✓ Dev server IS RUNNING on port ${wtConfig.port}${colors.NC}`);
     console.log('');
     console.log(`  Access at: ${colors.GREEN}${wtConfig.baseUrl}${colors.NC}`);
 
@@ -94,23 +88,15 @@ export async function showDevServerStatus(config?: WtDevConfig): Promise<void> {
     const httpCode = await testConnection(wtConfig.baseUrl);
 
     if (httpCode === 200 || httpCode === 307) {
-      console.log(
-        `${colors.GREEN}✓ Server responds successfully (HTTP ${httpCode})${colors.NC}`
-      );
+      console.log(`${colors.GREEN}✓ Server responds successfully (HTTP ${httpCode})${colors.NC}`);
     } else if (httpCode === 0) {
-      console.log(
-        `${colors.YELLOW}⚠ Server detected but connection failed${colors.NC}`
-      );
+      console.log(`${colors.YELLOW}⚠ Server detected but connection failed${colors.NC}`);
       console.log('  This may be normal if server is still starting up');
     } else {
-      console.log(
-        `${colors.YELLOW}⚠ Server responded with HTTP ${httpCode}${colors.NC}`
-      );
+      console.log(`${colors.YELLOW}⚠ Server responded with HTTP ${httpCode}${colors.NC}`);
     }
   } else {
-    console.log(
-      `${colors.RED}✗ Dev server is NOT RUNNING on port ${wtConfig.port}${colors.NC}`
-    );
+    console.log(`${colors.RED}✗ Dev server is NOT RUNNING on port ${wtConfig.port}${colors.NC}`);
     console.log('');
     console.log('To start the dev server:');
     console.log(`  ${colors.GREEN}pnpm dev${colors.NC}`);
@@ -133,25 +119,19 @@ export async function stopDevServer(config?: WtDevConfig): Promise<boolean> {
   const portInUse = await isPortInUse(wtConfig.port);
 
   if (!portInUse) {
-    console.log(
-      `${colors.YELLOW}⚠ Dev server is not running on port ${wtConfig.port}${colors.NC}`
-    );
+    console.log(`${colors.YELLOW}⚠ Dev server is not running on port ${wtConfig.port}${colors.NC}`);
     printFooter();
     return true;
   }
 
-  console.log(
-    `${colors.YELLOW}Stopping processes on port ${wtConfig.port}...${colors.NC}`
-  );
+  console.log(`${colors.YELLOW}Stopping processes on port ${wtConfig.port}...${colors.NC}`);
   const success = await killProcessesOnPort(wtConfig.port);
 
   if (success) {
     console.log(`${colors.GREEN}✓ Dev server stopped${colors.NC}`);
   } else {
     console.log(`${colors.RED}✗ Failed to stop dev server${colors.NC}`);
-    console.log(
-      `  Try manually: lsof -ti :${wtConfig.port} | xargs kill -9`
-    );
+    console.log(`  Try manually: lsof -ti :${wtConfig.port} | xargs kill -9`);
   }
 
   printFooter();
@@ -163,7 +143,7 @@ export async function stopDevServer(config?: WtDevConfig): Promise<boolean> {
  */
 export async function startDevServer(
   config?: WtDevConfig,
-  options: { force?: boolean } = {}
+  options: { force?: boolean } = {},
 ): Promise<void> {
   const cfg = config ?? loadConfig();
   const wtConfig = getWorktreeConfig(cfg);
@@ -179,7 +159,7 @@ export async function startDevServer(
   if (portInUse) {
     if (options.force) {
       console.log(
-        `${colors.YELLOW}⚠ Dev server is already running on port ${wtConfig.port}${colors.NC}`
+        `${colors.YELLOW}⚠ Dev server is already running on port ${wtConfig.port}${colors.NC}`,
       );
       console.log(`${colors.YELLOW}Force restart requested...${colors.NC}`);
       console.log('');
@@ -192,26 +172,16 @@ export async function startDevServer(
       console.log(`${colors.GREEN}✓ Port ${wtConfig.port} is now available${colors.NC}`);
     } else {
       console.log(
-        `${colors.YELLOW}⚠ Dev server is already running on port ${wtConfig.port}${colors.NC}`
+        `${colors.YELLOW}⚠ Dev server is already running on port ${wtConfig.port}${colors.NC}`,
       );
       console.log('');
       console.log('Options:');
-      console.log(
-        `  1. Access existing server: ${colors.GREEN}${wtConfig.baseUrl}${colors.NC}`
-      );
-      console.log(
-        `  2. Check status:            ${colors.GREEN}pnpm dev --status${colors.NC}`
-      );
-      console.log(
-        `  3. Force restart:           ${colors.GREEN}pnpm dev --force${colors.NC}`
-      );
-      console.log(
-        `  4. Stop server:             ${colors.GREEN}pnpm dev --stop${colors.NC}`
-      );
+      console.log(`  1. Access existing server: ${colors.GREEN}${wtConfig.baseUrl}${colors.NC}`);
+      console.log(`  2. Check status:            ${colors.GREEN}pnpm dev --status${colors.NC}`);
+      console.log(`  3. Force restart:           ${colors.GREEN}pnpm dev --force${colors.NC}`);
+      console.log(`  4. Stop server:             ${colors.GREEN}pnpm dev --stop${colors.NC}`);
       console.log('');
-      console.log(
-        `${colors.BLUE}Note: Only one dev server should run per worktree${colors.NC}`
-      );
+      console.log(`${colors.BLUE}Note: Only one dev server should run per worktree${colors.NC}`);
       printFooter();
       process.exit(0);
     }
@@ -223,20 +193,11 @@ export async function startDevServer(
   await ensureInngestServer(cfg);
 
   console.log('');
-  console.log(
-    `${colors.GREEN}Starting Next.js dev server on port ${wtConfig.port}...${colors.NC}`
-  );
+  console.log(`${colors.GREEN}Starting Next.js dev server on port ${wtConfig.port}...${colors.NC}`);
   console.log('');
 
   // Start Next.js with turbopack
-  const nextArgs = [
-    'exec',
-    'next',
-    'dev',
-    '--turbopack',
-    '-p',
-    wtConfig.port.toString(),
-  ];
+  const nextArgs = ['exec', 'next', 'dev', '--turbopack', '-p', wtConfig.port.toString()];
 
   const devProcess = spawn('pnpm', nextArgs, {
     stdio: 'inherit',
@@ -247,9 +208,7 @@ export async function startDevServer(
   // Handle process exit
   devProcess.on('exit', (exitCode) => {
     if (exitCode !== 0 && exitCode !== null) {
-      console.error(
-        `${colors.RED}✗ Dev server exited with code ${exitCode}${colors.NC}`
-      );
+      console.error(`${colors.RED}✗ Dev server exited with code ${exitCode}${colors.NC}`);
       process.exit(exitCode);
     }
   });
@@ -257,9 +216,7 @@ export async function startDevServer(
   // Handle termination signals
   const handleShutdown = (signal: NodeJS.Signals) => {
     console.log('');
-    console.log(
-      `${colors.YELLOW}Received ${signal}, stopping dev server...${colors.NC}`
-    );
+    console.log(`${colors.YELLOW}Received ${signal}, stopping dev server...${colors.NC}`);
     devProcess.kill(signal);
     setTimeout(() => process.exit(0), 1000);
   };

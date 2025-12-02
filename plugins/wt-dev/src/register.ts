@@ -5,7 +5,15 @@
  * in the project's .claude/plugins directory.
  */
 
-import { existsSync, mkdirSync, symlinkSync, readlinkSync, unlinkSync, rmSync, readFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  symlinkSync,
+  readlinkSync,
+  unlinkSync,
+  rmSync,
+  readFileSync,
+} from 'node:fs';
 import { dirname, join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -69,7 +77,9 @@ function isInstalledPackage(): boolean {
 /**
  * Register the plugin with Claude Code
  */
-export function registerPlugin(options: { force?: boolean; projectRoot?: string } = {}): RegisterResult {
+export function registerPlugin(
+  options: { force?: boolean; projectRoot?: string } = {},
+): RegisterResult {
   const { force = false } = options;
 
   // Find project root

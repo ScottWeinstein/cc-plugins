@@ -78,7 +78,7 @@ export function findProjectRoot(startDir: string = process.cwd()): string {
 
   throw new Error(
     `Could not find project root (package.json). ` +
-      `Searched ${depth} directories from ${startDir}.`
+      `Searched ${depth} directories from ${startDir}.`,
   );
 }
 
@@ -107,7 +107,9 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
     // Log warning when using defaults due to config issues
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.warn(`Warning: Could not read devServer config from ${packagePath}: ${message}`);
-    console.warn(`Using default configuration (basePort: ${DEFAULT_BASE_PORT}, inngestPort: ${DEFAULT_INNGEST_PORT})`);
+    console.warn(
+      `Using default configuration (basePort: ${DEFAULT_BASE_PORT}, inngestPort: ${DEFAULT_INNGEST_PORT})`,
+    );
   }
 
   return {

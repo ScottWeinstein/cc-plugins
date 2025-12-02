@@ -31,11 +31,7 @@ import {
   showInngestLogs,
   restartInngestServer,
 } from './inngest/manager.js';
-import {
-  registerPlugin,
-  unregisterPlugin,
-  checkRegistration,
-} from './register.js';
+import { registerPlugin, unregisterPlugin, checkRegistration } from './register.js';
 
 const HELP = `
 wt-dev - Unified worktree and Inngest management
@@ -123,13 +119,9 @@ async function main(): Promise<void> {
     switch (command) {
       case 'dev': {
         // Validate no conflicting flags
-        const actionFlags = ['force', 'stop', 'status', 'logs'].filter((f) =>
-          flags.has(f)
-        );
+        const actionFlags = ['force', 'stop', 'status', 'logs'].filter((f) => flags.has(f));
         if (actionFlags.length > 1) {
-          console.error(
-            `Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`
-          );
+          console.error(`Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`);
           process.exit(1);
         }
 
@@ -148,13 +140,9 @@ async function main(): Promise<void> {
 
       case 'inngest': {
         // Validate no conflicting flags
-        const actionFlags = ['stop', 'status', 'logs', 'restart'].filter((f) =>
-          flags.has(f)
-        );
+        const actionFlags = ['stop', 'status', 'logs', 'restart'].filter((f) => flags.has(f));
         if (actionFlags.length > 1) {
-          console.error(
-            `Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`
-          );
+          console.error(`Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`);
           process.exit(1);
         }
 
@@ -217,9 +205,7 @@ async function main(): Promise<void> {
         process.exit(1);
     }
   } catch (error) {
-    console.error(
-      `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
+    console.error(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     process.exit(1);
   }
 }

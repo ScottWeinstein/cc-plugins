@@ -152,7 +152,7 @@ export function findProcessesOnPort(port: number): number[] {
       });
       // Filter lines matching port in JS, then extract PIDs
       const portPattern = new RegExp(`:${port}\\s`);
-      const matchingLines = ssOutput.split('\n').filter(line => portPattern.test(line));
+      const matchingLines = ssOutput.split('\n').filter((line) => portPattern.test(line));
 
       // Parse ss output to extract PIDs (format: users:(("name",pid=123,fd=4)))
       const pids: number[] = [];

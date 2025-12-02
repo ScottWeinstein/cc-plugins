@@ -99,7 +99,9 @@ export function getHashBasedPort(projectRoot: string, ports: number[]): number {
     if (!isNaN(port) && port >= 1 && port <= 65535) {
       return port;
     }
-    console.warn(`Warning: Invalid PORT env var "${process.env.PORT}" (must be 1-65535), using hash-based assignment`);
+    console.warn(
+      `Warning: Invalid PORT env var "${process.env.PORT}" (must be 1-65535), using hash-based assignment`,
+    );
   }
 
   // Get all worktrees for this repository
@@ -168,7 +170,7 @@ function resolveAllPorts(worktrees: string[], ports: number[]): Map<string, numb
     if (!assignments.has(wt)) {
       throw new Error(
         `Port pool exhausted: ${worktrees.length} worktrees but only ${ports.length} ports available. ` +
-          `Add more ports to devServer.ports in package.json or set PORT env var.`
+          `Add more ports to devServer.ports in package.json or set PORT env var.`,
       );
     }
   }

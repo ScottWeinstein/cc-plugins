@@ -10,13 +10,13 @@ Manage per-worktree Next.js development servers with automatic port assignment a
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server (checks for duplicates first) |
-| `pnpm dev --force` | Kill existing server and restart |
-| `pnpm dev --status` | Check if server is running and show URL |
-| `pnpm dev --stop` | Stop the dev server |
-| `pnpm dev --logs` | Tail the dev server log file |
+| Command             | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `pnpm dev`          | Start dev server (checks for duplicates first) |
+| `pnpm dev --force`  | Kill existing server and restart               |
+| `pnpm dev --status` | Check if server is running and show URL        |
+| `pnpm dev --stop`   | Stop the dev server                            |
+| `pnpm dev --logs`   | Tail the dev server log file                   |
 
 ## Usage Protocol
 
@@ -51,12 +51,14 @@ Projects configure ports in `package.json`:
 ## Common Scenarios
 
 ### Starting Fresh
+
 ```bash
 pnpm dev --status  # Check current state
 pnpm dev           # Start if not running
 ```
 
 ### Port Conflict
+
 ```bash
 pnpm dev --status  # Shows existing server URL
 # Either use existing URL, or:
@@ -64,6 +66,7 @@ pnpm dev --force   # Kill and restart
 ```
 
 ### Debugging
+
 ```bash
 pnpm dev --logs    # View server output
 lsof -i :5001      # Check what's using port
@@ -76,6 +79,7 @@ The dev server automatically ensures the Inngest server is running before starti
 ## Pre-Approved Operations
 
 When using this skill, you can execute:
+
 - `pnpm dev`, `pnpm dev --force`, `pnpm dev --stop`, `pnpm dev --status`, `pnpm dev --logs`
 - `lsof -i :PORT` to check port usage
 - `curl localhost:PORT` to test connectivity

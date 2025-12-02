@@ -1,12 +1,29 @@
-**/dist/
-# Exception: wt-dev dist is committed for GitHub installs
-!plugins/wt-dev/dist/
-.vscode/
+# Build output
+dist/
+
+# Dependencies
 node_modules/
-.env
-.DS_Store
-*.log
+
+# IDE
+.vscode/
 .idea/
 *.iml
-coverage/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+
+# Logs
+*.log
 npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Packed tarballs (generated during release)
+*.tgz
