@@ -11,7 +11,7 @@
  * }
  *
  * basePort: Starting port for the pool (defaults to 5001)
- * maxPorts: Number of ports to generate (defaults to 5, valid range: 1-128)
+ * maxPorts: Number of ports to generate (defaults to 128, valid range: 1-128)
  *   - Hard limit of 128 prevents excessive port allocation that could
  *     exhaust system resources or conflict with other services
  *   - Values outside 1-128 are clamped with a warning
@@ -35,7 +35,7 @@ export interface WtDevConfig {
 
 // Default base port (5001 keeps us in unprivileged range and below common app ports)
 const DEFAULT_BASE_PORT = 5001;
-const DEFAULT_MAX_PORTS = 5;
+const DEFAULT_MAX_PORTS = 128; // Sufficient for any reasonable worktree setup
 const MAX_PORTS_LIMIT = 128; // Hard limit to prevent excessive port allocation
 const DEFAULT_INNGEST_PORT = 8288;
 

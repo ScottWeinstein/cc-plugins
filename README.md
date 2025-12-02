@@ -133,16 +133,24 @@ For TypeScript plugins:
 
 ### Making a Release
 
-1. Ensure all checks pass: `pnpm check`
-2. Run the release script: `pnpm release`
-3. Enter the new version when prompted (semver format)
-4. Push the tag: `git push origin main --tags`
+Releases are done via GitHub Actions to avoid direct commits to `main`.
 
-The GitHub Actions workflow will automatically:
+```bash
+pnpm release          # Bump patch: 0.1.1 → 0.1.2
+pnpm release --minor  # Bump minor: 0.1.1 → 0.2.0
+pnpm release --major  # Bump major: 0.1.1 → 1.0.0
+pnpm release --dry-run  # Preview without triggering
+```
 
-- Build the packages
-- Create a GitHub release
-- Upload the `wt-dev.tgz` artifact
+The release workflow will:
+
+- Run all checks and tests
+- Update version in all `package.json` files
+- Commit and tag the release
+- Push to `main`
+- Create a GitHub release with artifacts
+
+Requires [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
 
 ## License
 
