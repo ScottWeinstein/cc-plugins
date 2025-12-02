@@ -16,6 +16,32 @@ import { loadConfig, type WtDevConfig } from '../config.js';
 import { listWorktrees } from '../shared/git-utils.js';
 
 /**
+ * Custom error thrown when the port pool is exhausted
+ */
+export class PortExhaustedError extends Error {
+  constructor(
+    public readonly worktreeCount: number,
+    public readonly portCount: number,
+  ) {
+    super(
+      `\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `ERROR: Port pool exhausted\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `You have ${worktreeCount} worktrees but only ${portCount} ports configured.\n\n` +
+        `To fix this, increase maxPorts in your package.json:\n\n` +
+        `  "devServer": {\n` +
+        `    "maxPorts": ${Math.max(portCount + 1, worktreeCount)}\n` +
+        `  }\n\n` +
+        `Or override with PORT environment variable (bypasses collision detection):\n` +
+        `  PORT=3000 pnpm dev\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`,
+    );
+    this.name = 'PortExhaustedError';
+  }
+}
+
+/**
  * Compute a deterministic port from a path using hash
  */
 function computeHashPort(worktreePath: string, ports: number[]): number {
@@ -168,10 +194,7 @@ function resolveAllPorts(worktrees: string[], ports: number[]): Map<string, numb
 
     // If we couldn't find a port, throw helpful error
     if (!assignments.has(wt)) {
-      throw new Error(
-        `Port pool exhausted: ${worktrees.length} worktrees but only ${ports.length} ports available. ` +
-          `Add more ports to devServer.ports in package.json or set PORT env var.`,
-      );
+      throw new PortExhaustedError(worktrees.length, ports.length);
     }
   }
 

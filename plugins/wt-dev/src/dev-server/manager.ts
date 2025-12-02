@@ -10,10 +10,26 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { loadConfig, getDevServerLogPath, type WtDevConfig } from '../config.js';
-import { getWorktreeConfig } from './port-manager.js';
+import { getWorktreeConfig, PortExhaustedError, type WorktreeConfig } from './port-manager.js';
 import { isPortInUse } from '../shared/port-detection.js';
 import { killProcessesOnPort } from '../shared/process-utils.js';
 import { ensureInngestServer } from '../inngest/manager.js';
+
+/**
+ * Get worktree config with proper error handling for port exhaustion.
+ * Exits with code 1 if port pool is exhausted.
+ */
+function getWorktreeConfigOrExit(cfg: WtDevConfig): WorktreeConfig {
+  try {
+    return getWorktreeConfig(cfg);
+  } catch (error) {
+    if (error instanceof PortExhaustedError) {
+      console.error(error.message);
+      process.exit(1);
+    }
+    throw error;
+  }
+}
 
 // ANSI color codes
 const colors = {
@@ -66,7 +82,7 @@ async function testConnection(baseUrl: string): Promise<number> {
  */
 export async function showDevServerStatus(config?: WtDevConfig): Promise<void> {
   const cfg = config ?? loadConfig();
-  const wtConfig = getWorktreeConfig(cfg);
+  const wtConfig = getWorktreeConfigOrExit(cfg);
 
   printHeader('Dev Server Status Check');
 
@@ -112,7 +128,7 @@ export async function showDevServerStatus(config?: WtDevConfig): Promise<void> {
  */
 export async function stopDevServer(config?: WtDevConfig): Promise<boolean> {
   const cfg = config ?? loadConfig();
-  const wtConfig = getWorktreeConfig(cfg);
+  const wtConfig = getWorktreeConfigOrExit(cfg);
 
   printHeader('Stopping Dev Server');
 
@@ -146,7 +162,7 @@ export async function startDevServer(
   options: { force?: boolean } = {},
 ): Promise<void> {
   const cfg = config ?? loadConfig();
-  const wtConfig = getWorktreeConfig(cfg);
+  const wtConfig = getWorktreeConfigOrExit(cfg);
 
   printHeader('Next.js Dev Server');
   console.log(`Worktree port: ${colors.BLUE}${wtConfig.port}${colors.NC}`);
