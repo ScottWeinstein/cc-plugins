@@ -5,24 +5,24 @@
  * Uses lock-based coordination to prevent race conditions.
  */
 
-import { spawn, execSync } from "child_process";
-import fs from "fs";
-import os from "os";
-import path from "path";
-import { loadConfig, getInngestLogPath, type WtDevConfig } from "../config.js";
-import { isPortInUse, findProcessesOnPort } from "../shared/port-detection.js";
+import { spawn, execSync } from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { loadConfig, getInngestLogPath, type WtDevConfig } from '../config.js';
+import { isPortInUse, findProcessesOnPort } from '../shared/port-detection.js';
 import {
   readPidFile,
   writePidFile,
   deletePidFile,
   acquireLock,
   releaseLock,
-} from "../shared/file-utils.js";
-import { isProcessRunning } from "../shared/process-utils.js";
+} from '../shared/file-utils.js';
+import { isProcessRunning } from '../shared/process-utils.js';
 
 // File paths for PID and lock files
-const PID_FILE = path.join(os.tmpdir(), "wt-dev-inngest.pid");
-const LOCK_FILE = path.join(os.tmpdir(), "wt-dev-inngest.lock");
+const PID_FILE = path.join(os.tmpdir(), 'wt-dev-inngest.pid');
+const LOCK_FILE = path.join(os.tmpdir(), 'wt-dev-inngest.lock');
 
 // Health check configuration
 const HEALTH_CHECK_MAX_ATTEMPTS = 20; // 10 seconds max wait
@@ -30,11 +30,11 @@ const HEALTH_CHECK_INTERVAL_MS = 500;
 
 // ANSI color codes
 const colors = {
-  BLUE: "\x1b[0;34m",
-  GREEN: "\x1b[0;32m",
-  YELLOW: "\x1b[1;33m",
-  RED: "\x1b[0;31m",
-  NC: "\x1b[0m",
+  BLUE: '\x1b[0;34m',
+  GREEN: '\x1b[0;32m',
+  YELLOW: '\x1b[1;33m',
+  RED: '\x1b[0;31m',
+  NC: '\x1b[0m',
 };
 
 /**
@@ -76,22 +76,22 @@ async function waitForServerHealth(inngestPort: number): Promise<boolean> {
  * Find inngest-cli executable
  */
 function findInngestCli(): { command: string; args: string[] } {
-  const isWindows = process.platform === "win32";
+  const isWindows = process.platform === 'win32';
 
   // Try pnpx first (most reliable in pnpm workspaces)
   try {
-    execSync(isWindows ? "where pnpx" : "which pnpx", { stdio: "ignore" });
-    return { command: "pnpx", args: ["inngest-cli"] };
+    execSync(isWindows ? 'where pnpx' : 'which pnpx', { stdio: 'ignore' });
+    return { command: 'pnpx', args: ['inngest-cli'] };
   } catch {
     // Fallback to inngest-cli in PATH
     try {
-      execSync(isWindows ? "where inngest-cli" : "which inngest-cli", {
-        stdio: "ignore",
+      execSync(isWindows ? 'where inngest-cli' : 'which inngest-cli', {
+        stdio: 'ignore',
       });
-      return { command: "inngest-cli", args: [] };
+      return { command: 'inngest-cli', args: [] };
     } catch {
       throw new Error(
-        "Could not find inngest-cli. Please ensure it is installed: pnpm add -D inngest-cli"
+        'Could not find inngest-cli. Please ensure it is installed: pnpm add -D inngest-cli',
       );
     }
   }
@@ -117,7 +117,7 @@ export function getInngestStatus(config?: WtDevConfig): InngestStatus {
   if (!pid) {
     return {
       running: false,
-      message: "Inngest dev server is not running",
+      message: 'Inngest dev server is not running',
     };
   }
 
@@ -133,7 +133,7 @@ export function getInngestStatus(config?: WtDevConfig): InngestStatus {
 
   return {
     running: false,
-    message: "Inngest dev server is not running (stale PID file found)",
+    message: 'Inngest dev server is not running (stale PID file found)',
   };
 }
 
@@ -160,10 +160,10 @@ function startInngestServerProcess(config: WtDevConfig): number {
   const ports = config.devServer.ports;
   const logFile = getInngestLogPath(config.projectRoot);
 
-  console.log("Starting system-wide Inngest dev server...");
+  console.log('Starting system-wide Inngest dev server...');
   console.log(`  Port: ${inngestPort}`);
   console.log(`  UI: http://localhost:${inngestPort}`);
-  console.log(`  Watching: ${ports.join(", ")}`);
+  console.log(`  Watching: ${ports.join(', ')}`);
   console.log(`  Log file: ${logFile}`);
 
   // Find inngest-cli executable
@@ -175,20 +175,20 @@ function startInngestServerProcess(config: WtDevConfig): number {
   // Build inngest-cli arguments
   const inngestArgs = [
     ...args,
-    "dev",
-    "--port",
+    'dev',
+    '--port',
     inngestPort.toString(),
-    ...discoveryUrls.flatMap((url) => ["--sdk-url", url]),
+    ...discoveryUrls.flatMap((url) => ['--sdk-url', url]),
   ];
 
   // Open log file for append
-  const logFd = fs.openSync(logFile, "a");
+  const logFd = fs.openSync(logFile, 'a');
 
   let inngest;
   try {
     inngest = spawn(command, inngestArgs, {
       detached: true,
-      stdio: ["ignore", logFd, logFd],
+      stdio: ['ignore', logFd, logFd],
       cwd: config.projectRoot,
     });
   } catch (error) {
@@ -198,7 +198,7 @@ function startInngestServerProcess(config: WtDevConfig): number {
   }
 
   // Handle spawn errors before unref (otherwise errors are swallowed)
-  inngest.on("error", (error) => {
+  inngest.on('error', (error) => {
     console.error(`${colors.RED}✗ Failed to start Inngest: ${error.message}${colors.NC}`);
     deletePidFile(PID_FILE);
   });
@@ -233,13 +233,13 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
     // Check if the process is actually running
     if (isProcessRunning(existingPid)) {
       console.log(
-        `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`
+        `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`,
       );
       console.log(`  UI: http://localhost:${inngestPort}`);
       return;
     } else {
       // Stale PID file, clean it up
-      console.log("Cleaning up stale Inngest PID file...");
+      console.log('Cleaning up stale Inngest PID file...');
       deletePidFile(PID_FILE);
     }
   }
@@ -247,7 +247,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
   // Double-check by testing the port
   if (await isPortInUse(inngestPort)) {
     console.log(
-      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`
+      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`,
     );
     console.log(`  UI: http://localhost:${inngestPort}`);
     return;
@@ -266,7 +266,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
 
     // If still no server after waiting, try to acquire lock again
     if (!acquireLock(LOCK_FILE)) {
-      console.log("Another process is starting the Inngest server...");
+      console.log('Another process is starting the Inngest server...');
       return;
     }
   }
@@ -280,7 +280,7 @@ export async function ensureInngestServer(config?: WtDevConfig): Promise<void> {
 
     if (!isHealthy) {
       console.log(`${colors.YELLOW}⚠ Server started but health check timed out${colors.NC}`);
-      console.log("  The server may still be initializing.");
+      console.log('  The server may still be initializing.');
     }
   } finally {
     // Always release lock
@@ -298,7 +298,7 @@ export async function startInngestServer(config?: WtDevConfig): Promise<void> {
   const existingPid = readPidFile(PID_FILE);
   if (existingPid && isProcessRunning(existingPid)) {
     console.log(
-      `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`
+      `${colors.GREEN}✓ Inngest dev server already running (PID: ${existingPid})${colors.NC}`,
     );
     console.log(`  UI: http://localhost:${inngestPort}`);
     console.log(`  To restart: pnpm inngest --restart`);
@@ -309,7 +309,7 @@ export async function startInngestServer(config?: WtDevConfig): Promise<void> {
   // Also check if port is in use (in case PID file is stale)
   if (await isPortInUse(inngestPort)) {
     console.log(
-      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`
+      `${colors.GREEN}✓ Inngest dev server already running on port ${inngestPort}${colors.NC}`,
     );
     console.log(`  UI: http://localhost:${inngestPort}`);
     console.log(`  To restart: pnpm inngest --restart`);
@@ -328,7 +328,7 @@ export async function stopInngestServer(config?: WtDevConfig): Promise<void> {
   const cfg = config ?? loadConfig();
   const inngestPort = cfg.devServer.inngestPort;
 
-  console.log("Stopping Inngest dev server...");
+  console.log('Stopping Inngest dev server...');
 
   let stoppedAny = false;
 
@@ -337,11 +337,11 @@ export async function stopInngestServer(config?: WtDevConfig): Promise<void> {
   if (pidFromFile && isProcessRunning(pidFromFile)) {
     console.log(`  Killing process ${pidFromFile}...`);
     try {
-      process.kill(pidFromFile, "SIGKILL");
+      process.kill(pidFromFile, 'SIGKILL');
       stoppedAny = true;
     } catch (error: unknown) {
       const err = error as NodeJS.ErrnoException;
-      if (err.code !== "ESRCH") {
+      if (err.code !== 'ESRCH') {
         console.warn(`  Warning: Failed to kill PID ${pidFromFile}: ${err.message}`);
       }
     }
@@ -353,11 +353,11 @@ export async function stopInngestServer(config?: WtDevConfig): Promise<void> {
     if (pid === pidFromFile) continue; // Already handled
     console.log(`  Found orphaned process using port ${inngestPort}`);
     try {
-      process.kill(pid, "SIGKILL");
+      process.kill(pid, 'SIGKILL');
       stoppedAny = true;
     } catch (error: unknown) {
       const err = error as NodeJS.ErrnoException;
-      if (err.code !== "ESRCH") {
+      if (err.code !== 'ESRCH') {
         console.warn(`  Warning: Failed to kill orphaned PID ${pid}: ${err.message}`);
       }
     }
@@ -371,13 +371,13 @@ export async function stopInngestServer(config?: WtDevConfig): Promise<void> {
 
   if (await isPortInUse(inngestPort)) {
     console.warn(
-      `${colors.YELLOW}Warning: Port ${inngestPort} may still be in use. Check manually.${colors.NC}`
+      `${colors.YELLOW}Warning: Port ${inngestPort} may still be in use. Check manually.${colors.NC}`,
     );
   } else {
     if (stoppedAny) {
       console.log(`${colors.GREEN}✓ Inngest dev server stopped${colors.NC}`);
     } else {
-      console.log("Inngest dev server is not running");
+      console.log('Inngest dev server is not running');
     }
   }
 }
@@ -386,7 +386,7 @@ export async function stopInngestServer(config?: WtDevConfig): Promise<void> {
  * Restart the Inngest server
  */
 export async function restartInngestServer(config?: WtDevConfig): Promise<void> {
-  console.log("Restarting Inngest dev server...");
+  console.log('Restarting Inngest dev server...');
   await stopInngestServer(config);
   await sleep(1000); // Give it a moment to fully stop
   await startInngestServer(config);
@@ -400,37 +400,37 @@ export function showInngestLogs(config?: WtDevConfig): void {
   const logFile = getInngestLogPath(cfg.projectRoot);
 
   if (!fs.existsSync(logFile)) {
-    console.log("No log file found");
-    console.log("Start the server with: pnpm inngest");
+    console.log('No log file found');
+    console.log('Start the server with: pnpm inngest');
     return;
   }
 
   console.log(`Showing last 50 lines of ${logFile}`);
-  console.log("(Press Ctrl+C to exit)");
-  console.log("─".repeat(80));
+  console.log('(Press Ctrl+C to exit)');
+  console.log('─'.repeat(80));
 
-  const isWindows = process.platform === "win32";
+  const isWindows = process.platform === 'win32';
 
   if (isWindows) {
     // Windows: Use PowerShell Get-Content
-    const ps = spawn("powershell", ["-Command", `Get-Content -Path "${logFile}" -Tail 50 -Wait`], {
-      stdio: "inherit",
+    const ps = spawn('powershell', ['-Command', `Get-Content -Path "${logFile}" -Tail 50 -Wait`], {
+      stdio: 'inherit',
     });
 
-    process.on("SIGINT", () => {
+    process.on('SIGINT', () => {
       ps.kill();
-      console.log("\n");
+      console.log('\n');
       process.exit(0);
     });
   } else {
     // Unix: Use tail -f
-    const tail = spawn("tail", ["-f", "-n", "50", logFile], {
-      stdio: "inherit",
+    const tail = spawn('tail', ['-f', '-n', '50', logFile], {
+      stdio: 'inherit',
     });
 
-    process.on("SIGINT", () => {
+    process.on('SIGINT', () => {
       tail.kill();
-      console.log("\n");
+      console.log('\n');
       process.exit(0);
     });
   }

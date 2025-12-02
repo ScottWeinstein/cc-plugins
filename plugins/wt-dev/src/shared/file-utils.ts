@@ -2,9 +2,9 @@
  * File utilities for atomic writes, PID files, and lock files
  */
 
-import fs from "fs";
-import path from "path";
-import os from "os";
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 /**
  * Write content to a file atomically using temp file + rename
@@ -13,7 +13,7 @@ import os from "os";
 export async function atomicWrite(filePath: string, content: string): Promise<void> {
   const tempPath = `${filePath}.tmp.${process.pid}`;
   try {
-    await fs.promises.writeFile(tempPath, content, "utf8");
+    await fs.promises.writeFile(tempPath, content, 'utf8');
     await fs.promises.rename(tempPath, filePath); // Atomic on POSIX
   } catch (error) {
     // Clean up temp file if it exists
@@ -32,7 +32,7 @@ export async function atomicWrite(filePath: string, content: string): Promise<vo
 export function atomicWriteSync(filePath: string, content: string): void {
   const tempPath = `${filePath}.tmp.${process.pid}`;
   try {
-    fs.writeFileSync(tempPath, content, "utf8");
+    fs.writeFileSync(tempPath, content, 'utf8');
     fs.renameSync(tempPath, filePath); // Atomic on POSIX
   } catch (error) {
     // Clean up temp file if it exists
@@ -54,7 +54,7 @@ export function atomicWriteSync(filePath: string, content: string): void {
 export function readPidFile(pidFilePath: string): number | null {
   try {
     if (fs.existsSync(pidFilePath)) {
-      const content = fs.readFileSync(pidFilePath, "utf8").trim();
+      const content = fs.readFileSync(pidFilePath, 'utf8').trim();
       const pid = parseInt(content, 10);
       if (!isNaN(pid) && pid > 0) {
         return pid;
@@ -101,7 +101,7 @@ export function getTempPidFilePath(name: string): string {
 export function acquireLock(lockFilePath: string): boolean {
   try {
     // Use exclusive file creation as a mutex
-    fs.writeFileSync(lockFilePath, process.pid.toString(), { flag: "wx" });
+    fs.writeFileSync(lockFilePath, process.pid.toString(), { flag: 'wx' });
     return true;
   } catch {
     // Lock file already exists

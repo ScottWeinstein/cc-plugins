@@ -5,9 +5,9 @@
  * hash-based port assignment with collision detection.
  */
 
-import { execFileSync } from "child_process";
+import { execFileSync } from 'child_process';
 
-const WORKTREE_PREFIX = "worktree ";
+const WORKTREE_PREFIX = 'worktree ';
 
 // Cache for worktree list (TTL: 5 seconds)
 let worktreeCache: { worktrees: string[]; timestamp: number; cwd: string } | null = null;
@@ -29,15 +29,15 @@ export function listWorktrees(cwd: string = process.cwd()): string[] {
   }
 
   try {
-    const output = execFileSync("git", ["worktree", "list", "--porcelain"], {
+    const output = execFileSync('git', ['worktree', 'list', '--porcelain'], {
       cwd,
-      encoding: "utf8",
-      stdio: ["pipe", "pipe", "pipe"], // Capture stderr for debugging
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'], // Capture stderr for debugging
     });
 
     // Parse line-by-line (handles paths with spaces correctly)
     const worktrees = output
-      .split("\n")
+      .split('\n')
       .filter((line) => line.startsWith(WORKTREE_PREFIX))
       .map((line) => line.slice(WORKTREE_PREFIX.length));
 
@@ -47,7 +47,7 @@ export function listWorktrees(cwd: string = process.cwd()): string[] {
     return worktrees;
   } catch (error) {
     // Log git errors for debugging (but not "not a git repository")
-    if (error instanceof Error && !error.message.includes("not a git repository")) {
+    if (error instanceof Error && !error.message.includes('not a git repository')) {
       console.warn(`git worktree list failed: ${error.message}`);
     }
     return [];

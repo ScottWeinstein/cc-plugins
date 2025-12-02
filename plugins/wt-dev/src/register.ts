@@ -13,15 +13,15 @@ import {
   unlinkSync,
   rmSync,
   readFileSync,
-} from "node:fs";
-import { dirname, join, resolve, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+} from 'node:fs';
+import { dirname, join, resolve, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Package root is one level up from dist/
-const PACKAGE_ROOT = resolve(__dirname, "..");
+const PACKAGE_ROOT = resolve(__dirname, '..');
 
 interface RegisterResult {
   success: boolean;
@@ -34,19 +34,19 @@ interface RegisterResult {
  */
 function findProjectRoot(): string | null {
   let current = resolve(process.cwd());
-  const root = resolve("/");
+  const root = resolve('/');
 
   while (current !== root) {
     // Check for .git directory (strong indicator of project root)
-    if (existsSync(join(current, ".git"))) {
+    if (existsSync(join(current, '.git'))) {
       return current;
     }
 
     // Check for package.json with workspaces (monorepo root)
-    const pkgPath = join(current, "package.json");
+    const pkgPath = join(current, 'package.json');
     if (existsSync(pkgPath)) {
       try {
-        const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
         if (pkg.workspaces) {
           return current;
         }
@@ -59,7 +59,7 @@ function findProjectRoot(): string | null {
   }
 
   // Fallback: return the directory containing node_modules/wt-dev
-  const nodeModulesIndex = PACKAGE_ROOT.indexOf("node_modules");
+  const nodeModulesIndex = PACKAGE_ROOT.indexOf('node_modules');
   if (nodeModulesIndex !== -1) {
     return PACKAGE_ROOT.slice(0, nodeModulesIndex - 1);
   }
@@ -71,14 +71,14 @@ function findProjectRoot(): string | null {
  * Check if path is inside node_modules (installed as dependency)
  */
 function isInstalledPackage(): boolean {
-  return PACKAGE_ROOT.includes("node_modules");
+  return PACKAGE_ROOT.includes('node_modules');
 }
 
 /**
  * Register the plugin with Claude Code
  */
 export function registerPlugin(
-  options: { force?: boolean; projectRoot?: string } = {}
+  options: { force?: boolean; projectRoot?: string } = {},
 ): RegisterResult {
   const { force = false } = options;
 
@@ -87,17 +87,17 @@ export function registerPlugin(
   if (!projectRoot) {
     return {
       success: false,
-      message: "Could not find project root. Run from within a git repository or npm project.",
+      message: 'Could not find project root. Run from within a git repository or npm project.',
     };
   }
 
   // Determine paths
-  const claudeDir = join(projectRoot, ".claude");
-  const pluginsDir = join(claudeDir, "plugins");
-  const pluginTarget = join(pluginsDir, "wt-dev");
+  const claudeDir = join(projectRoot, '.claude');
+  const pluginsDir = join(claudeDir, 'plugins');
+  const pluginTarget = join(pluginsDir, 'wt-dev');
 
   // Source is the .claude-plugin directory in the package
-  const pluginSource = join(PACKAGE_ROOT, ".claude-plugin");
+  const pluginSource = join(PACKAGE_ROOT, '.claude-plugin');
 
   if (!existsSync(pluginSource)) {
     return {
@@ -112,7 +112,7 @@ export function registerPlugin(
   if (!resolvedSource.startsWith(resolvedPackage)) {
     return {
       success: false,
-      message: "Plugin source validation failed: path outside package boundaries.",
+      message: 'Plugin source validation failed: path outside package boundaries.',
     };
   }
 
@@ -126,7 +126,7 @@ export function registerPlugin(
         if (resolvedTarget === resolvedSource) {
           return {
             success: true,
-            message: "Plugin already registered.",
+            message: 'Plugin already registered.',
             pluginPath: pluginTarget,
           };
         }
@@ -192,16 +192,16 @@ export function unregisterPlugin(options: { projectRoot?: string } = {}): Regist
   if (!projectRoot) {
     return {
       success: false,
-      message: "Could not find project root.",
+      message: 'Could not find project root.',
     };
   }
 
-  const pluginTarget = join(projectRoot, ".claude", "plugins", "wt-dev");
+  const pluginTarget = join(projectRoot, '.claude', 'plugins', 'wt-dev');
 
   if (!existsSync(pluginTarget)) {
     return {
       success: true,
-      message: "Plugin not registered (nothing to remove).",
+      message: 'Plugin not registered (nothing to remove).',
     };
   }
 
@@ -209,7 +209,7 @@ export function unregisterPlugin(options: { projectRoot?: string } = {}): Regist
     unlinkSync(pluginTarget);
     return {
       success: true,
-      message: "Plugin unregistered successfully.",
+      message: 'Plugin unregistered successfully.',
     };
   } catch (e) {
     return {
@@ -232,7 +232,7 @@ export function checkRegistration(options: { projectRoot?: string } = {}): {
     return { registered: false };
   }
 
-  const pluginTarget = join(projectRoot, ".claude", "plugins", "wt-dev");
+  const pluginTarget = join(projectRoot, '.claude', 'plugins', 'wt-dev');
 
   return {
     registered: existsSync(pluginTarget),
@@ -265,6 +265,6 @@ export function postinstall(): void {
 }
 
 // CLI entry point for postinstall (triggered by npm lifecycle)
-if (process.env.npm_lifecycle_event === "postinstall") {
+if (process.env.npm_lifecycle_event === 'postinstall') {
   postinstall();
 }

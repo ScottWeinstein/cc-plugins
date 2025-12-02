@@ -125,7 +125,7 @@ import {
   isPortInUse,
   registerPlugin,
   checkRegistration,
-} from "wt-dev";
+} from 'wt-dev';
 
 // Get worktree port and URL
 const wtConfig = getWorktreeConfig();

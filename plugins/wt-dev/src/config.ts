@@ -13,8 +13,8 @@
  * 128 ports are generated starting from basePort.
  */
 
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
 export interface DevServerConfig {
   /** Available ports for worktree dev servers */
@@ -67,7 +67,7 @@ export function findProjectRoot(startDir: string = process.cwd()): string {
     }
     visited.add(realPath);
 
-    const packagePath = path.join(currentDir, "package.json");
+    const packagePath = path.join(currentDir, 'package.json');
     if (fs.existsSync(packagePath)) {
       return currentDir;
     }
@@ -78,7 +78,7 @@ export function findProjectRoot(startDir: string = process.cwd()): string {
 
   throw new Error(
     `Could not find project root (package.json). ` +
-      `Searched ${depth} directories from ${startDir}.`
+      `Searched ${depth} directories from ${startDir}.`,
   );
 }
 
@@ -88,27 +88,27 @@ export function findProjectRoot(startDir: string = process.cwd()): string {
  */
 export function loadConfig(projectRoot?: string): WtDevConfig {
   const root = projectRoot ?? findProjectRoot();
-  const packagePath = path.join(root, "package.json");
+  const packagePath = path.join(root, 'package.json');
 
   let basePort = DEFAULT_BASE_PORT;
   let inngestPort = DEFAULT_INNGEST_PORT;
 
   try {
-    const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+    const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
     if (packageJson.devServer) {
-      if (typeof packageJson.devServer.basePort === "number") {
+      if (typeof packageJson.devServer.basePort === 'number') {
         basePort = packageJson.devServer.basePort;
       }
-      if (typeof packageJson.devServer.inngestPort === "number") {
+      if (typeof packageJson.devServer.inngestPort === 'number') {
         inngestPort = packageJson.devServer.inngestPort;
       }
     }
   } catch (error) {
     // Log warning when using defaults due to config issues
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.warn(`Warning: Could not read devServer config from ${packagePath}: ${message}`);
     console.warn(
-      `Using default configuration (basePort: ${DEFAULT_BASE_PORT}, inngestPort: ${DEFAULT_INNGEST_PORT})`
+      `Using default configuration (basePort: ${DEFAULT_BASE_PORT}, inngestPort: ${DEFAULT_INNGEST_PORT})`,
     );
   }
 
@@ -125,12 +125,12 @@ export function loadConfig(projectRoot?: string): WtDevConfig {
  * Get log file path for dev server
  */
 export function getDevServerLogPath(projectRoot: string): string {
-  return path.join(projectRoot, "dev-server.log");
+  return path.join(projectRoot, 'dev-server.log');
 }
 
 /**
  * Get log file path for Inngest server
  */
 export function getInngestLogPath(projectRoot: string): string {
-  return path.join(projectRoot, "inngest.log");
+  return path.join(projectRoot, 'inngest.log');
 }

@@ -9,17 +9,17 @@
  * worktrees are added or removed (unlike index-based assignment).
  */
 
-import crypto from "crypto";
-import fs from "fs";
-import path from "path";
-import { loadConfig, type WtDevConfig } from "../config.js";
-import { listWorktrees } from "../shared/git-utils.js";
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { loadConfig, type WtDevConfig } from '../config.js';
+import { listWorktrees } from '../shared/git-utils.js';
 
 /**
  * Compute a deterministic port from a path using hash
  */
 function computeHashPort(worktreePath: string, ports: number[]): number {
-  const hash = crypto.createHash("md5").update(worktreePath).digest("hex");
+  const hash = crypto.createHash('md5').update(worktreePath).digest('hex');
   const hashNum = parseInt(hash.substring(0, 8), 16);
   return ports[hashNum % ports.length];
 }
@@ -56,7 +56,7 @@ function findContainingWorktree(projectPath: string, worktrees: string[]): strin
 
     // Use path.relative for reliable containment check (cross-platform)
     const rel = path.relative(wtRealPath, projectRealPath);
-    if (!rel.startsWith("..") && !path.isAbsolute(rel)) {
+    if (!rel.startsWith('..') && !path.isAbsolute(rel)) {
       return worktrees[i];
     }
   }
@@ -70,7 +70,7 @@ function findContainingWorktree(projectPath: string, worktrees: string[]): strin
  */
 function computeSecondaryHashPort(worktreePath: string, ports: number[], attempt: number): number {
   // Add attempt number to create different hash for each retry
-  const hash = crypto.createHash("md5").update(`${worktreePath}:${attempt}`).digest("hex");
+  const hash = crypto.createHash('md5').update(`${worktreePath}:${attempt}`).digest('hex');
   const hashNum = parseInt(hash.substring(0, 8), 16);
   return ports[hashNum % ports.length];
 }
@@ -90,7 +90,7 @@ function computeSecondaryHashPort(worktreePath: string, ports: number[], attempt
 export function getHashBasedPort(projectRoot: string, ports: number[]): number {
   // Validate ports array
   if (ports.length === 0) {
-    throw new Error("ports array must not be empty");
+    throw new Error('ports array must not be empty');
   }
 
   // Check for PORT env var override first
@@ -100,7 +100,7 @@ export function getHashBasedPort(projectRoot: string, ports: number[]): number {
       return port;
     }
     console.warn(
-      `Warning: Invalid PORT env var "${process.env.PORT}" (must be 1-65535), using hash-based assignment`
+      `Warning: Invalid PORT env var "${process.env.PORT}" (must be 1-65535), using hash-based assignment`,
     );
   }
 
@@ -170,7 +170,7 @@ function resolveAllPorts(worktrees: string[], ports: number[]): Map<string, numb
     if (!assignments.has(wt)) {
       throw new Error(
         `Port pool exhausted: ${worktrees.length} worktrees but only ${ports.length} ports available. ` +
-          `Add more ports to devServer.ports in package.json or set PORT env var.`
+          `Add more ports to devServer.ports in package.json or set PORT env var.`,
       );
     }
   }
@@ -189,7 +189,7 @@ export interface WorktreeConfig {
   /** Port for this worktree's dev server */
   port: number;
   /** Protocol (http or https) */
-  protocol: "http" | "https";
+  protocol: 'http' | 'https';
   /** Base URL for the dev server */
   baseUrl: string;
   /** Port for the shared Inngest server */
@@ -207,8 +207,8 @@ export function getWorktreeConfig(config?: WtDevConfig): WorktreeConfig {
 
   // Default to HTTP for localhost since dev server doesn't have SSL certificates
   // Set USE_HTTPS_LOCALHOST=true only if you have configured SSL certs for local dev
-  const useHttps = process.env.USE_HTTPS_LOCALHOST === "true";
-  const protocol = useHttps ? "https" : "http";
+  const useHttps = process.env.USE_HTTPS_LOCALHOST === 'true';
+  const protocol = useHttps ? 'https' : 'http';
 
   return {
     port,
