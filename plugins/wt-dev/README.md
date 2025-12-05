@@ -157,7 +157,7 @@ const regStatus = checkRegistration();
 
 ## Requirements
 
-- Node.js >= 18
+- Node.js >= 24.11.0
 - pnpm
 - Next.js with turbopack (for dev server)
 - Claude Code (for skills)

@@ -42,7 +42,8 @@ Projects configure ports in `package.json`:
 ```json
 {
   "devServer": {
-    "ports": [5001, 5002, 5003, 5004, 5005],
+    "basePort": 3000,
+    "maxPorts": 10,
     "inngestPort": 8288
   }
 }
@@ -53,15 +54,12 @@ Projects configure ports in `package.json`:
 ### Starting Fresh
 
 ```bash
-pnpm dev --status  # Check current state
-pnpm dev           # Start if not running
+pnpm dev           # Start if not running, report status and port if already running
 ```
 
-### Port Conflict
+### Port Conflict or Stuck Server
 
 ```bash
-pnpm dev --status  # Shows existing server URL
-# Either use existing URL, or:
 pnpm dev --force   # Kill and restart
 ```
 

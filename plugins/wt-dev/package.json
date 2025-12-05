@@ -47,7 +47,7 @@
     "url": "https://github.com/ScottWeinstein/cc-plugins/issues"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">= 24.11.0"
   },
   "devDependencies": {
     "vitest": "^4.0.15"
