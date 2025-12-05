@@ -1,22 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tree:*)",
-      "Bash(find:*)",
-      "Bash(pnpm install)",
-      "Bash(pnpm format:check:*)",
-      "Bash(pnpm lint:*)",
-      "Bash(pnpm typecheck:*)",
-      "Bash(pnpm check:*)",
-      "Bash(git show:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm test:*)",
-      "Bash(pnpm check:*)",
-      "Bash(pnpm build:*)",
-      "Bash(pnpm -w check:*)",
-      "Bash(pnpm -w build:*)",
       "Bash(git add:*)",
-      "Bash(pnpm build:*)"
+      "Bash(find:*)",
+      "Bash(git commit:*)",
+      "Bash(git show:*)",
+      "Bash(pnpm -w build:*)",
+      "Bash(pnpm -w check:*)",
+      "Bash(pnpm -w test:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm format:check:*)",
+      "Bash(pnpm install)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []
