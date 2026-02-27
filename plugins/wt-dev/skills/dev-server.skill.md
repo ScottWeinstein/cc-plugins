@@ -10,17 +10,16 @@ Manage per-worktree Next.js development servers with automatic port assignment a
 
 ## Commands
 
-| Command             | Description                                    |
-| ------------------- | ---------------------------------------------- |
-| `pnpm dev`          | Start dev server (checks for duplicates first) |
-| `pnpm dev --force`  | Kill existing server and restart               |
-| `pnpm dev --status` | Check if server is running and show URL        |
-| `pnpm dev --stop`   | Stop the dev server                            |
-| `pnpm dev --logs`   | Tail the dev server log file                   |
+| Command            | Description                                    |
+| ------------------ | ---------------------------------------------- |
+| `pnpm dev`         | Start dev server (checks for duplicates first) |
+| `pnpm dev --force` | Kill existing server and restart               |
+| `pnpm dev --stop`  | Stop the dev server                            |
+| `pnpm dev --logs`  | Tail the dev server log file                   |
 
 ## Usage Protocol
 
-1. **ALWAYS check status before browser testing**: Run `pnpm dev --status` to verify the server is running and get the correct URL.
+1. **ALWAYS check status before browser testing**: Run `pnpm dev` to start the server or confirm it's running — it reports the port and URL when already running.
 
 2. **Never assume server is running** from previous context - worktrees have different ports.
 
@@ -78,7 +77,7 @@ The dev server automatically ensures the Inngest server is running before starti
 
 When using this skill, you can execute:
 
-- `pnpm dev`, `pnpm dev --force`, `pnpm dev --stop`, `pnpm dev --status`, `pnpm dev --logs`
+- `pnpm dev`, `pnpm dev --force`, `pnpm dev --stop`, `pnpm dev --logs`
 - `lsof -i :PORT` to check port usage
 - `curl localhost:PORT` to test connectivity
 - Read `package.json` for configuration

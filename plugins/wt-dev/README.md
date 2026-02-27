@@ -54,7 +54,6 @@ Each worktree gets a deterministic port based on its path hash.
 ```bash
 pnpm dev              # Start dev server
 pnpm dev --force      # Kill existing and restart
-pnpm dev --status     # Show status and URL
 pnpm dev --stop       # Stop server
 pnpm dev --logs       # Tail logs
 ```
