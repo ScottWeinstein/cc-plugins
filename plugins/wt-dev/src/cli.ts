@@ -7,7 +7,6 @@
  *   wt-dev dev              # Start dev server (checks for duplicates)
  *   wt-dev dev --force      # Kill existing, restart
  *   wt-dev dev --stop       # Stop dev server
- *   wt-dev dev --status     # Show status
  *   wt-dev dev --logs       # Tail logs
  *
  *   wt-dev inngest          # Start/ensure Inngest running
@@ -18,12 +17,7 @@
  */
 
 import { loadConfig } from './config.js';
-import {
-  startDevServer,
-  stopDevServer,
-  showDevServerStatus,
-  showDevServerLogs,
-} from './dev-server/manager.js';
+import { startDevServer, stopDevServer, showDevServerLogs } from './dev-server/manager.js';
 import {
   startInngestServer,
   stopInngestServer,
@@ -39,45 +33,93 @@ wt-dev - Unified worktree and Inngest management
 Usage:
   wt-dev dev [options]      Manage dev server
   wt-dev inngest [options]  Manage Inngest server
-  wt-dev register           Register Claude Code plugin
-  wt-dev unregister         Unregister Claude Code plugin
-  wt-dev --help             Show this help
 
-Dev Server Options:
-  (no option)     Start dev server (checks for duplicates)
-  --force         Kill existing server and restart
-  --stop          Stop the dev server
-  --status        Show server status
-  --logs          Tail the log file
+Quick start:
+  pnpm dev              # Start dev server
+  pnpm dev --force      # Force restart
+  pnpm dev --stop       # Stop server
+  pnpm dev --logs       # Tail logs
 
-Inngest Server Options:
-  (no option)     Start/ensure Inngest server is running
-  --stop          Stop Inngest server (affects all worktrees!)
-  --status        Show server status
-  --logs          Tail the log file
-  --restart       Restart the server
+Run 'wt-dev <command> --help' for all options (including register, config).
+`;
 
-Register Options:
-  (no option)     Register plugin with Claude Code
-  --force         Overwrite existing registration
-  --status        Check registration status
+const DEV_HELP = `
+wt-dev dev - Dev server management
 
-Configuration:
-  Add to your package.json:
+Options:
+  (no option)   Start dev server (checks for duplicates)
+  --force       Kill existing server and restart
+  --stop        Stop the dev server
+  --logs        Tail the log file
+
+Configuration (package.json):
   {
     "devServer": {
-      "ports": [5001, 5002, 5003, 5004, 5005],
+      "basePort": 5001,
+      "maxPorts": 128,
       "inngestPort": 8288
     }
   }
 
 Examples:
-  pnpm dev                # Start dev server
-  pnpm dev --status       # Check if running
-  pnpm dev --force        # Force restart
+  pnpm dev              # Start dev server
+  pnpm dev --force      # Force restart
+  pnpm dev --stop       # Stop server
+  pnpm dev --logs       # Tail logs
+  PORT=3000 pnpm dev    # Override port
+`;
+
+const INNGEST_HELP = `
+wt-dev inngest - Inngest server management
+
+Options:
+  (no option)   Start/ensure Inngest server is running
+  --stop        Stop Inngest server (affects all worktrees!)
+  --status      Show server status
+  --logs        Tail the log file
+  --restart     Restart the server
+
+Configuration (package.json):
+  {
+    "devServer": {
+      "inngestPort": 8288
+    }
+  }
+
+Examples:
   pnpm inngest            # Start Inngest
-  pnpm inngest --stop     # Stop Inngest
-  npx wt-dev register     # Register Claude Code plugin
+  pnpm inngest --status   # Check status
+  pnpm inngest --stop     # Stop (affects all worktrees!)
+  pnpm inngest --restart  # Restart
+  pnpm inngest --logs     # Tail logs
+`;
+
+const REGISTER_HELP = `
+wt-dev register - Claude Code plugin management
+
+Options:
+  (no option)   Register plugin with Claude Code
+  --force       Overwrite existing registration
+  --status      Check registration status
+  --help        Show this help
+
+Other commands:
+  wt-dev unregister     Remove registration
+
+Configuration (package.json):
+  {
+    "devServer": {
+      "basePort": 5001,
+      "maxPorts": 128,
+      "inngestPort": 8288
+    }
+  }
+
+Examples:
+  npx wt-dev register           # Register plugin
+  npx wt-dev register --force   # Re-register (e.g. after moving project)
+  npx wt-dev register --status  # Verify registration
+  npx wt-dev unregister         # Remove registration
 `;
 
 function showHelp(): void {
@@ -107,7 +149,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   // Handle help
-  if (args.includes('--help') || args.includes('-h') || args.length === 0) {
+  if (args[0] === '--help' || args[0] === '-h' || args.length === 0) {
     showHelp();
     process.exit(0);
   }
@@ -118,16 +160,18 @@ async function main(): Promise<void> {
   try {
     switch (command) {
       case 'dev': {
+        if (flags.has('help') || flags.has('h')) {
+          console.log(DEV_HELP);
+          process.exit(0);
+        }
         // Validate no conflicting flags
-        const actionFlags = ['force', 'stop', 'status', 'logs'].filter((f) => flags.has(f));
+        const actionFlags = ['force', 'stop', 'logs'].filter((f) => flags.has(f));
         if (actionFlags.length > 1) {
           console.error(`Error: Cannot use multiple flags together: --${actionFlags.join(', --')}`);
           process.exit(1);
         }
 
-        if (flags.has('status')) {
-          await showDevServerStatus(config);
-        } else if (flags.has('stop')) {
+        if (flags.has('stop')) {
           const success = await stopDevServer(config);
           process.exit(success ? 0 : 1);
         } else if (flags.has('logs')) {
@@ -139,6 +183,10 @@ async function main(): Promise<void> {
       }
 
       case 'inngest': {
+        if (flags.has('help') || flags.has('h')) {
+          console.log(INNGEST_HELP);
+          process.exit(0);
+        }
         // Validate no conflicting flags
         const actionFlags = ['stop', 'status', 'logs', 'restart'].filter((f) => flags.has(f));
         if (actionFlags.length > 1) {
@@ -161,6 +209,10 @@ async function main(): Promise<void> {
       }
 
       case 'register': {
+        if (flags.has('help') || flags.has('h')) {
+          console.log(REGISTER_HELP);
+          process.exit(0);
+        }
         if (flags.has('status')) {
           const status = checkRegistration();
           if (status.registered) {

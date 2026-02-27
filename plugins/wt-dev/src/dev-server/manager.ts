@@ -193,9 +193,8 @@ export async function startDevServer(
       console.log('');
       console.log('Options:');
       console.log(`  1. Access existing server: ${colors.GREEN}${wtConfig.baseUrl}${colors.NC}`);
-      console.log(`  2. Check status:            ${colors.GREEN}pnpm dev --status${colors.NC}`);
-      console.log(`  3. Force restart:           ${colors.GREEN}pnpm dev --force${colors.NC}`);
-      console.log(`  4. Stop server:             ${colors.GREEN}pnpm dev --stop${colors.NC}`);
+      console.log(`  2. Force restart:          ${colors.GREEN}pnpm dev --force${colors.NC}`);
+      console.log(`  3. Stop server:            ${colors.GREEN}pnpm dev --stop${colors.NC}`);
       console.log('');
       console.log(`${colors.BLUE}Note: Only one dev server should run per worktree${colors.NC}`);
       printFooter();
